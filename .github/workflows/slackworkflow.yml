@@ -36,10 +36,10 @@ jobs:
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
-
       - name: Try to fail
         run: exit 1
       - name: slack - GitHub Actions Slack integration
+        if: always()
         # You may pin to the exact commit or the version.
         # uses: act10ns/slack@da3191ebe2e67f49b46880b4633f5591a96d1d33
         uses: act10ns/slack@v1.5.0
