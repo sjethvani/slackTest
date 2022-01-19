@@ -48,6 +48,6 @@ jobs:
           # Specify success, failure, cancelled or a custom status.
           status: ${{ job.status }}
           # Override default channel with different channel or username
-          username: '@Sameer Jethvani'
+          channel: UH4EJJSSX
           # Override message format for step
           message: Test message from github actions
