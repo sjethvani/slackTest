@@ -11,6 +11,11 @@ on:
         required: true
         default: 'warning'
 
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: read
+  
 jobs:
   pr_commented:
     # This job only runs for pull request comments
@@ -33,4 +38,12 @@ jobs:
           echo A comment on issue $NUMBER
         env:
           NUMBER: ${{ github.event.issue.number }}
-      
+    
+    # using action to fetch pull request (PR) details . This information will then be used in `pull_request_checks`custom GHA
+      - name: Get PR base and target branch
+        uses: xt0rted/pull-request-comment-branch@v1
+        id: pr-comment-branch
+
+      - name: Print PR details
+        run: |
+          echo Target branch is  ${{ steps.pr-comment-branch.outputs.base_ref }}
