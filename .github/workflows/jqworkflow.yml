@@ -19,7 +19,31 @@ on:
         type: boolean
         description: Include  emojis
       environment:
-        type: environment
+        type: environment  
+      rafay_project:
+        type: choice
+        description: 'Rafay Project name'
+        required: true
+        options:
+          - development
+      rafay_cluster:
+        type: choice
+        description: 'Rafay cluster name'
+        required: true
+        options:
+          - development
+      alationfc_version:
+        description: 'AlationFC helm chart image tag/version'
+        required: true
+        default: 'latest'
+      tenant1_namesace_to_be_deployed:
+        type: boolean
+        required: true
+        description: 'Do you want to deploy alationfc in namespace()'
+      tenant2_namesace_to_be_deployed:
+        type: boolean
+        required: true
+        description: 'Do you want to deploy alationfc in namespace()'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
