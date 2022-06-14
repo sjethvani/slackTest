@@ -59,7 +59,7 @@ jobs:
           echo "ALATION_FC_RAFAY_NAMESPACE_2 is ${{ env.ALATION_FC_RAFAY_NAMESPACE_2 }}"
           
       - name: fetch latest tag/version of alationfc helm chart
-        if: " ${{ github.event.inputs.alationfc_version }} == 'latest' "
+        if: "${{ github.event.inputs.alationfc_version }} == 'latest'"
         run: |
           echo "ALATION_FC_HELMCHART_LATEST_VERSION is ${ALATION_FC_HELMCHART_LATEST_VERSION}"
           
@@ -69,7 +69,7 @@ jobs:
         shell: bash
       
       - name: Successful execution complted
-      - run: |
+        run: |
           if [ ${{ github.event.inputs.tenant1_namespace_dev_cluster_to_be_deployed }} = true ]; then
             echo "alationfc/core publish to namespace ${{ env.ALATION_FC_RAFAY_NAMESPACE_1 }} of development Rafay cluster status is ${{ job.status }}"
           fi
