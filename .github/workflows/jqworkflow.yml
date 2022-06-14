@@ -44,8 +44,8 @@ jobs:
     steps:
       - name: analying inputs and setting env variables accordingly
         run: |
-          #if [ ${{ github.event.inputs.rafay_project }} == 'development' ]; then RAFAY_PROJECT_ID="gkj4g4k"; elif [ ${{ rgithub.event.inputs.rafay_project }} == 'qa' ]; then RAFAY_PROJECT_ID='z24x37k'; else echo 'Invalid Rafay Project'; fi
-          #if [ ${{ github.event.inputs.rafay_cluster }} == 'development' ]; then RAFAY_CLUSTER_ID="ky49w9k"; elif [ ${{ rgithub.event.inputs.rafay_project }} == 'qa' ]; then RAFAY_CLUSTER_ID='24wdz7m'; else echo 'Invalid Rafay Cluster'; fi
+          #if [ ${{ github.event.inputs.rafay_project }} == 'development' ]; then RAFAY_PROJECT_ID="gkj4g4k"; elif [ ${{ github.event.inputs.rafay_project }} == 'qa' ]; then RAFAY_PROJECT_ID='z24x37k'; else echo 'Invalid Rafay Project'; fi
+          #if [ ${{ github.event.inputs.rafay_cluster }} == 'development' ]; then RAFAY_CLUSTER_ID="ky49w9k"; elif [ ${{ github.event.inputs.rafay_project }} == 'qa' ]; then RAFAY_CLUSTER_ID='24wdz7m'; else echo 'Invalid Rafay Cluster'; fi
           if [ ${{ github.event.inputs.tenant1_namespace_dev_cluster_to_be_deployed }} = true ]; then ALATION_FC_RAFAY_NAMESPACE_1='c457ef59-4575-494b-8aa0-ba2e246b3a77'; else ALATION_FC_RAFAY_NAMESPACE_1=''; fi
           if [ ${{ github.event.inputs.tenant2_namespace_dev_cluster_to_be_deployed }} = true ]; then ALATION_FC_RAFAY_NAMESPACE_2='c457ef59-4575-494b-8aa0-ba2e246b3a88'; else ALATION_FC_RAFAY_NAMESPACE_2=''; fi
 
