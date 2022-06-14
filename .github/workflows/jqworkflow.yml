@@ -59,7 +59,7 @@ jobs:
           echo "ALATION_FC_RAFAY_NAMESPACE_2 is ${{ env.ALATION_FC_RAFAY_NAMESPACE_2 }}"
           
       - name: fetch latest tag/version of alationfc helm chart
-        if: "${{ github.event.inputs.alationfc_version }} == 'latest'"
+        if: " ${{ github.event.inputs.alationfc_version }} == 'latest' "
         run: |
           echo "ALATION_FC_HELMCHART_LATEST_VERSION is ${ALATION_FC_HELMCHART_LATEST_VERSION}"
           
