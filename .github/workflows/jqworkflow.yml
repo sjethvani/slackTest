@@ -20,40 +20,51 @@ on:
         description: Include  emojis
       environment:
         type: environment  
-      rafay_project:
-        type: choice
-        description: 'Rafay Project name'
-        required: true
-        options:
-          - development
-      rafay_cluster:
-        type: choice
-        description: 'Rafay cluster name'
-        required: true
-        options:
-          - development
       alationfc_version:
-        description: 'AlationFC helm chart image tag/version'
-        required: true
+        description: 'AlationFC helm chart image tag/version. by default latest image to be pulled'
+        required: false
         default: 'latest'
-      tenant1_namesace_to_be_deployed:
+      tenant1_namespace_dev_cluster_to_be_deployed:
         type: boolean
         required: true
-        description: 'Do you want to deploy alationfc in namespace()'
-      tenant2_namesace_to_be_deployed:
+        description: 'tenant1 namespace (c457ef59-4575-494b-8aa0-ba2e246b3a77) (of rafay dev cluster) to be deployed with alationfc ?'
+      tenant2_namespace_dev_cluster_to_be_deployed:
         type: boolean
         required: true
-        description: 'Do you want to deploy alationfc in namespace()'
+        description: 'tenant2 namespace (c457ef59-4575-494b-8aa0-ba2e246b3a88) (of rafay dev cluster) to be deployed with alationfc ?'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
   build:
+    env:
+      ALATION_FC_HELMCHART_LATEST_VERSION: ${{ github.event.inputs.alationfc_version }}
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - name: analying inputs and setting env variables accordingly
+        run: |
+          #if [ ${{ github.event.inputs.rafay_project }} == 'development' ]; then RAFAY_PROJECT_ID="gkj4g4k"; elif [ ${{ rgithub.event.inputs.rafay_project }} == 'qa' ]; then RAFAY_PROJECT_ID='z24x37k'; else echo 'Invalid Rafay Project'; fi
+          #if [ ${{ github.event.inputs.rafay_cluster }} == 'development' ]; then RAFAY_CLUSTER_ID="ky49w9k"; elif [ ${{ rgithub.event.inputs.rafay_project }} == 'qa' ]; then RAFAY_CLUSTER_ID='24wdz7m'; else echo 'Invalid Rafay Cluster'; fi
+          if [ ${{ github.event.inputs.tenant1_namespace_dev_cluster_to_be_deployed }} = true ]; then ALATION_FC_RAFAY_NAMESPACE_1='c457ef59-4575-494b-8aa0-ba2e246b3a77'; else ALATION_FC_RAFAY_NAMESPACE_1=''; fi
+          if [ ${{ github.event.inputs.tenant2_namespace_dev_cluster_to_be_deployed }} = true ]; then ALATION_FC_RAFAY_NAMESPACE_2='c457ef59-4575-494b-8aa0-ba2e246b3a88'; else ALATION_FC_RAFAY_NAMESPACE_2=''; fi
+
+          #echo "RAFAY_PROJECT_ID=${RAFAY_PROJECT_ID}" >> $GITHUB_ENV
+          #echo "RAFAY_CLUSTER_ID=${RAFAY_CLUSTER_ID}" >> $GITHUB_ENV
+          echo "ALATION_FC_RAFAY_NAMESPACE_1=${ALATION_FC_RAFAY_NAMESPACE_1}" >> $GITHUB_ENV
+          echo "ALATION_FC_RAFAY_NAMESPACE_2=${ALATION_FC_RAFAY_NAMESPACE_2}" >> $GITHUB_ENV
+      - name: checking out env variables
+        run: |
+          echo "ALATION_FC_RAFAY_NAMESPACE_1 is ${{ env.ALATION_FC_RAFAY_NAMESPACE_1 }}"
+          echo "ALATION_FC_RAFAY_NAMESPACE_2 is ${{ env.ALATION_FC_RAFAY_NAMESPACE_2 }}"
+          
+      - name: fetch latest tag/version of alationfc helm chart
+        if: " ${{ github.event.inputs.alationfc_version }} == 'latest' "
+        run: |
+          echo "ALATION_FC_HELMCHART_LATEST_VERSION is ${ALATION_FC_HELMCHART_LATEST_VERSION}"
+          
       - name: Check jq
         run: |
           jq --version
