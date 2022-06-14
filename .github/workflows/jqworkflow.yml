@@ -67,7 +67,11 @@ jobs:
         run: |
           jq --version
         shell: bash
-      
+        
+      - name: For Tenant1, creating alationfc workflow , uploading helm chart & publishing workload
+        if: "${{ github.event.inputs.rafay_cluster.tenant1_namespace_dev_cluster_to_be_deployed }}"
+        run: echo "here I am hhhhh"     
+        
       - name: Successful execution complted
         run: |
           if [ ${{ github.event.inputs.tenant1_namespace_dev_cluster_to_be_deployed }} ]; then
