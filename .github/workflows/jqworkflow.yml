@@ -75,8 +75,9 @@ jobs:
       - name: Successful execution complted
         run: |
           if [ ${{ github.event.inputs.tenant1_namespace_dev_cluster_to_be_deployed }} ]; then
-            "echo \"\U0001F34F alationfc/core publish to namespace ${{ env.ALATION_FC_RAFAY_NAMESPACE_1 }} of development Rafay cluster status is ${{ job.status }}.\""
+            echo "alationfc/core publish to namespace ${{ env.ALATION_FC_RAFAY_NAMESPACE_1 }} of development Rafay cluster status is ${{ job.status }}"
           fi
           if [ ${{ github.event.inputs.tenant2_namespace_dev_cluster_to_be_deployed }} ]; then
-            "echo \"\U0001F34F alationfc/core publish to namespace ${{ env.ALATION_FC_RAFAY_NAMESPACE_2 }} of development Rafay cluster status is ${{ job.status }}.\""
+            echo "alationfc/core publish to namespace ${{ env.ALATION_FC_RAFAY_NAMESPACE_2 }} of development Rafay cluster status is ${{ job.status }}"
           fi
+      - run: "echo \"\U0001F34F alationfc/core publish to Rafay development cluster status is ${{ job.status }}.\""
