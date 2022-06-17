@@ -71,7 +71,7 @@ jobs:
         shell: bash
         
       - name: For Tenant1, creating alationfc workflow , uploading helm chart & publishing workload
-        if: "${{ github.event.inputs.rafay_cluster.tenant1_namespace_dev_cluster_to_be_deployed }} = true"
+        if: "${{ github.event.inputs.rafay_cluster.tenant1_namespace_dev_cluster_to_be_deployed }} == true"
         run: echo "here I am hhhhh"     
         
       - name: Step1
@@ -92,10 +92,13 @@ jobs:
       - run: "echo \"\U0001F34F alationfc/core publish to Rafay development cluster status is ${{ job.status }}.\""
       
       - name: alationfc in namespace1 deployed properly
-        if: ${{ github.event.inputs.rafay_cluster.tenant2_namespace_dev_cluster_to_be_deployed = true && (success() || failure()) }}
+        if: github.event.inputs.rafay_cluster.tenant1_namespace_dev_cluster_to_be_deployed && (success() || failure())
         run: "echo \"\U0001F34F alationfc/core publish to namespace ${{ env.ALATION_FC_RAFAY_NAMESPACE_1 }} of development Rafay cluster status is ${{ job.status }}.\""
         
       - name: alationfc in namespace2 deployed properly
-        if: "${{ github.event.inputs.rafay_cluster.tenant2_namespace_dev_cluster_to_be_deployed }} = true"
+        if: github.event.inputs.rafay_cluster.tenant2_namespace_dev_cluster_to_be_deployed && (success() || failure())
         run: "echo \"\U0001F34F alationfc/core publish to namespace ${{ env.ALATION_FC_RAFAY_NAMESPACE_2 }} of development Rafay cluster status is ${{ job.status }}.\""
+        
+      - run: "echo \"\U0001F34F alationfc/core publish to Rafay development cluster status is ${{ job.status }}.\""
+        if: success() || failure()
 
