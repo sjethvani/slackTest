@@ -71,14 +71,14 @@ jobs:
         shell: bash
         
       - name: For Tenant1, creating alationfc workflow , uploading helm chart & publishing workload
-        if: "${{ github.event.inputs.tenant1_namespace_dev_cluster_to_be_deployed }} == true"
+        if: github.event.inputs.tenant1_namespace_dev_cluster_to_be_deployed
         run: echo "here I am hhhhh"     
         
-      - name: Step1
+      - name: failing_step1
         run: exit 1
       
-      - name: Step2
-        if: ${{ github.event.inputs.tenant2_namespace_dev_cluster_to_be_deployed == 'true' && failure() }}
+      - name: step2_should_run_even_if_step1_fails
+        if: ${{ github.event.inputs.tenant2_namespace_dev_cluster_to_be_deployed == 'true' && (success() || failure()) }}
         run: echo "here I am hhhhh"
         
       - name: Successful execution complted
