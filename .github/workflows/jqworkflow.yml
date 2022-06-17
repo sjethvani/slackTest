@@ -72,6 +72,13 @@ jobs:
         if: "${{ github.event.inputs.rafay_cluster.tenant1_namespace_dev_cluster_to_be_deployed }} = true"
         run: echo "here I am hhhhh"     
         
+      - name: Step1
+        run: exit(1)
+      
+      - name: Step2
+        if: success() || failure()
+        run: echo "here I am hhhhh"
+        
       - name: Successful execution complted
         run: |
           if [ ${{ github.event.inputs.tenant1_namespace_dev_cluster_to_be_deployed }} ]; then
