@@ -76,7 +76,7 @@ jobs:
         run: exit(1)
       
       - name: Step2
-        if: success() || failure()
+        if: ${{ (github.event.inputs.rafay_cluster.tenant2_namespace_dev_cluster_to_be_deployed) && (success() || failure()) }}
         run: echo "here I am hhhhh"
         
       - name: Successful execution complted
