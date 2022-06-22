@@ -7,21 +7,28 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
-      name:
+      rafay_project:
         type: choice
-        description: Who to greet
-        options: 
-        - monalisa
-        - cschleiden
-      message:
+        description: 'Rafay Project name'
         required: true
-      use-emoji:
-        type: boolean
-        description: Include  emojis
+        options:
+          - development
+          - qa
+      rafay_cluster:
+        type: string
+        description: 'Rafay cluster name'
+        required: true
+        options:
+          - development
+          - qa
       alationfc_version:
         description: 'AlationFC helm chart image tag/version. by default latest image to be pulled'
         required: false
         default: 'latest'
+      tenant_deployed_with_alationfc:
+        type: text
+        required: true
+        description: 'single tenant id for which alationfc core is to be deployed'
       tenant1_namespace_dev_cluster_to_be_deployed:
         type: boolean
         required: true
@@ -55,50 +62,75 @@ jobs:
           #echo "RAFAY_CLUSTER_ID=${RAFAY_CLUSTER_ID}" >> $GITHUB_ENV
           echo "ALATION_FC_RAFAY_NAMESPACE_1=${ALATION_FC_RAFAY_NAMESPACE_1}" >> $GITHUB_ENV
           echo "ALATION_FC_RAFAY_NAMESPACE_2=${ALATION_FC_RAFAY_NAMESPACE_2}" >> $GITHUB_ENV
+          
+          echo "RAFAY_DEVELOPMENT_CLUSTER_NAME=development" >> $GITHUB_ENV
+          echo "ALATION_DEVLOPMENT_RDS_MASTER_USER_PASSWORD=NjlkVmlwUkZKSkNENDhWazN2VWhEekZIQng0Ym0zZ0g=" >> $GITHUB_ENV
+          echo "ALATION_DEVLOPMENT_RDS_MASTER_USERNAME=postgres" >> $GITHUB_ENV
+          echo "ALATION_DEVLOPMENT_RDS_ENDPOINT=development.cegc5ylcvyxw.us-east-2.rds.amazonaws.com" >> $GITHUB_ENV
+          echo "ALATION_DEVLOPMENT_RDS_PORT=5432" >> $GITHUB_ENV
+          echo "RAFAY_DEVELOPMENT_CLUSTER_ID=ky49w9k" >> $GITHUB_ENV
+          echo "RAFAY_DEVELOPMENT_PROJECT_ID=gkj4g4k" >> $GITHUB_ENV
+          echo "RAFAY_DEVELOPMENT_PROJECT_NAME=development" >> $GITHUB_ENV
+          echo "RAFAY_QA_CLUSTER_ID=24wdz7m" >> $GITHUB_ENV
+          echo "RAFAY_QA_CLUSTER_NAME=qa" >> $GITHUB_ENV
+          echo "RAFAY_QA_PROJECT_ID=z24x37k" >> $GITHUB_ENV
+          echo "RAFAY_QA_PROJECT_NAME=qa" >> $GITHUB_ENV
+          echo "ALATION_QA_RDS_MASTER_USER_PASSWORD=cUFBczJlNlJ5WTlnalR5cHJNN05uWFFNWVAyWHBveXc=" >> $GITHUB_ENV
+          echo "ALATION_QA_RDS_MASTER_USERNAME=postgres" >> $GITHUB_ENV
+          echo "ALATION_QA_RDS_ENDPOINT=qa.cegc5ylcvyxw.us-east-2.rds.amazonaws.com" >> $GITHUB_ENV
+          echo "ALATION_QA_RDS_PORT=5432" >> $GITHUB_ENV
+          
+      - name: analying inputs and setting env variables accordingly
+        run: |
+          echo "input helm chart version is ${{ github.event.inputs.alationfc_version }}"
+          echo "input rafay_project is ${{ github.event.inputs.rafay_project }}"
+          echo "input rafay_cluster is ${{ github.event.inputs.rafay_cluster }}"
+          echo "input tenant_deployed_with_alationfc is ${{ github.event.inputs.tenant_deployed_with_alationfc }}"
+
+          #setting 'RAFAY_PROJECT_ID' variable
+          if [ ${{ github.event.inputs.rafay_project }} == ${{ env.RAFAY_DEVELOPMENT_PROJECT_NAME }} ]; then RAFAY_PROJECT_ID=${{ env.RAFAY_DEVELOPMENT_PROJECT_ID }}; elif [ ${{ github.event.inputs.rafay_project }} == ${{ env.RAFAY_QA_PROJECT_NAME }} ]; then RAFAY_PROJECT_ID=${{ env.RAFAY_QA_PROJECT_ID }}; else echo 'Invalid Rafay Project'; fi
+          echo "RAFAY_PROJECT_ID=${RAFAY_PROJECT_ID}" >> $GITHUB_ENV
+
+          #setting 'RAFAY_CLUSTER_ID' variable
+          if [ ${{ github.event.inputs.rafay_cluster }} == ${{ env.RAFAY_DEVELOPMENT_CLUSTER_NAME }} ]; then
+            RAFAY_CLUSTER_ID=${{ env.RAFAY_DEVELOPMENT_CLUSTER_ID }};
+            RAFAY_CLUSTER_NAME=${{ env.RAFAY_DEVELOPMENT_CLUSTER_NAME }}
+            ALATION_RDS_DB_ENDPOINT=${{ env.ALATION_DEVLOPMENT_RDS_ENDPOINT }};
+            ALATION_RDS_PORT=${{ env.ALATION_DEVLOPMENT_RDS_PORT }};
+            ALATION_RDS_MASSTER_USERNAME=${{ env.ALATION_DEVLOPMENT_RDS_MASTER_USERNAME }};
+            ALATION_RDS_MASTER_USER_PASSWORD=${{ env.ALATION_DEVLOPMENT_RDS_MASTER_USER_PASSWORD }};
+          elif [ ${{ github.event.inputs.rafay_project }} == ${{ env.RAFAY_QA_CLUSTER_NAME }} ]; then
+            RAFAY_CLUSTER_ID=${{ env.RAFAY_QA_CLUSTER_ID }};
+            RAFAY_CLUSTER_NAME=${{ env.RAFAY_QA_CLUSTER_NAME }}
+            ALATION_RDS_DB_ENDPOINT=${{ env.ALATION_QA_RDS_ENDPOINT }};
+            ALATION_RDS_PORT=${{ env.ALATION_QA_RDS_PORT }};
+            ALATION_RDS_MASTER_USER_PASSWORD=${{ env.ALATION_QA_RDS_MASTER_USERNAME }};
+            ALATION_RDS_MASTER_USER_PASSWORD=${{ env.ALATION_QA_RDS_MASTER_USER_PASSWORD }};
+          else echo 'Invalid Rafay Cluster';
+          fi
+
+          echo "RAFAY_CLUSTER_ID=${RAFAY_CLUSTER_ID}" >> $GITHUB_ENV
+          echo "RAFAY_CLUSTER_NAME=${RAFAY_CLUSTER_NAME}" >> $GITHUB_ENV
+          echo "ALATION_RDS_DB_ENDPOINT=${ALATION_RDS_DB_ENDPOINT}" >> $GITHUB_ENV
+          echo "ALATION_RDS_PORT=${ALATION_RDS_PORT}" >> $GITHUB_ENV
+          echo "ALATION_RDS_MASSTER_USERNAME=${ALATION_RDS_MASSTER_USERNAME}" >> $GITHUB_ENV
+          echo "ALATION_RDS_MASTER_USER_PASSWORD=${ALATION_RDS_MASTER_USER_PASSWORD}" >> $GITHUB_ENV
+
+          TENANT_ID=${{ github.event.inputs.tenant_deployed_with_alationfc }}
+          echo "TENANT_ID=${TENANT_ID}" >> $GITHUB_ENV
+
+          #if [ ${{ github.event.inputs.tenant1_namespace_dev_cluster_to_be_deployed }} = true ]; then ALATION_FC_RAFAY_NAMESPACE_1='c457ef59-4575-494b-8aa0-ba2e246b3a77'; else ALATION_FC_RAFAY_NAMESPACE_1=''; fi
+          #if [ ${{ github.event.inputs.tenant2_namespace_dev_cluster_to_be_deployed }} = true ]; then ALATION_FC_RAFAY_NAMESPACE_2='c457ef59-4575-494b-8aa0-ba2e246b3a88'; else ALATION_FC_RAFAY_NAMESPACE_2=''; fi
+
+          # For testing purpose
+          RAFAY_PROJECT_ID="gkj4g4k"
+          RAFAY_CLUSTER_ID="ky49w9k"
+          TENANT_ID='c457ef59-4575-494b-8aa0-ba2e246b3a88'
+          echo "RAFAY_PROJECT_ID=${RAFAY_PROJECT_ID}" >> $GITHUB_ENV
+          echo "RAFAY_CLUSTER_ID=${RAFAY_CLUSTER_ID}" >> $GITHUB_ENV
+          echo "ALATION_FC_RAFAY_NAMESPACE=${TENANT_ID}" >> $GITHUB_ENV
+          
       - name: checking out env variables
         run: |
           echo "ALATION_FC_RAFAY_NAMESPACE_1 is ${{ env.ALATION_FC_RAFAY_NAMESPACE_1 }}"
           echo "ALATION_FC_RAFAY_NAMESPACE_2 is ${{ env.ALATION_FC_RAFAY_NAMESPACE_2 }}"
-          
-      - name: fetch latest tag/version of alationfc helm chart
-        if: "${{ github.event.inputs.alationfc_version }} == 'latest'"
-        run: |
-          echo "ALATION_FC_HELMCHART_LATEST_VERSION is ${ALATION_FC_HELMCHART_LATEST_VERSION}"
-          
-      - name: Check jq
-        run: |
-          jq --version
-        shell: bash
-        
-      - name: For Tenant1, creating alationfc workflow , uploading helm chart & publishing workload
-        if: ${{ github.event.inputs.tenant1_namespace_dev_cluster_to_be_deployed == 'true' }}
-        run: echo "here I am hhhhh"     
-        
-      - name: failing_step1
-        run: exit 1
-      
-      - name: step2_should_run_even_if_step1_fails
-        if: ${{ github.event.inputs.tenant2_namespace_dev_cluster_to_be_deployed == 'true' && (success() || failure()) }}
-        run: echo "here I am hhhhh"
-        
-      - name: Successful execution complted
-        run: |
-          if [ ${{ github.event.inputs.tenant1_namespace_dev_cluster_to_be_deployed }} ]; then
-            echo "alationfc/core publish to namespace ${{ env.ALATION_FC_RAFAY_NAMESPACE_1 }} of development Rafay cluster status is ${{ job.status }}"
-          fi
-          if [ ${{ github.event.inputs.tenant2_namespace_dev_cluster_to_be_deployed }} ]; then
-            echo "alationfc/core publish to namespace ${{ env.ALATION_FC_RAFAY_NAMESPACE_2 }} of development Rafay cluster status is ${{ job.status }}"
-          fi
-      - run: "echo \"\U0001F34F alationfc/core publish to Rafay development cluster status is ${{ job.status }}.\""
-      
-      - name: alationfc in namespace1 deployed properly
-        if: ${{ github.event.inputs.tenant1_namespace_dev_cluster_to_be_deployed == 'true' && (success() || failure()) }}
-        run: "echo \"\U0001F34F alationfc/core publish to namespace ${{ env.ALATION_FC_RAFAY_NAMESPACE_1 }} of development Rafay cluster status is ${{ job.status }}.\""
-        
-      - name: alationfc in namespace2 deployed properly
-        if: ${{ github.event.inputs.tenant2_namespace_dev_cluster_to_be_deployed == 'true' && (success() || failure()) }}
-        run: "echo \"\U0001F34F alationfc/core publish to namespace ${{ env.ALATION_FC_RAFAY_NAMESPACE_2 }} of development Rafay cluster status is ${{ job.status }}.\""
-        
-      - run: "echo \"\U0001F34F alationfc/core publish to Rafay development cluster status is ${{ job.status }}.\""
-        if: success() || failure()
-
