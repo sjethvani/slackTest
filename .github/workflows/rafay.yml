@@ -1,0 +1,97 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  workflow_dispatch:
+    inputs:
+      rafay_project_name:
+        type: string
+        description: 'Rafay Project name'
+        required: true
+      rafay_cluster_name:
+        type: string
+        description: 'Rafay cluster name'
+        required: true
+      alationfc_version:
+        description: 'AlationFC helm chart image tag/version in semver format (for-ex 13.1.0-6374 , Major.Minor.Patch-AlationBuildGHWorkflowRunNo). By default Latest alationfc helm chart will be pulled'
+        required: false
+        default: 'Latest'
+      preprovisioned_tenant_id:
+        type: string
+        required: true
+        description: 'Tenant_id (of pre-provisioned tenant) in which alationfc core is to be deployed. For development rafay cluster use either of these pre provisioned tenant ids(c457ef59-4575-494b-8aa0-ba2e246b3a77,c457ef59-4575-494b-8aa0-ba2e246b3a88)'
+      alationfc_cpu_requests:
+        type: string
+        required: true
+        default: '1000m'
+        description: 'CPU cores (in milicores) requests for alationfc container (for-ex 500m , 2000m) , default would be 1000m (i.e 1 core/1 vCpu). Note: m5.2xlarge ec2 node has 8 vCpu (i.e 8 cores)'
+      alationfc_memory_requests:
+        type: string
+        required: true
+        default: '10Gi'
+        description: 'RAM memory (in Gi) requests for alationfc container (for-ex 8Gi , 10Gi , 16Gi) , default would be 10Gi (i.e 10 GB RAM). Note: m5.2xlarge ec2 node has 32 GB RAM'
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    env:
+      HELM_EXPERIMENTAL_OCI: 1
+      ALATION_FC_HELMCHART_VERSION: ${{ github.event.inputs.alationfc_version }}
+      
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: Printing given inputs and setting tenant_id
+        run: |
+
+          #printing github workflow input variables for debugging purpose
+          echo "input alationfc_version is ${{ github.event.inputs.alationfc_version }}"
+          echo "input rafay_project_name is ${{ github.event.inputs.rafay_project_name }}"
+          echo "input rafay_cluster_name is ${{ github.event.inputs.rafay_cluster_name }}"
+          echo "input preprovisioned_tenant_id is ${{ github.event.inputs.preprovisioned_tenant_id }}"
+          
+      - name: "setting rafay key/secret"
+        run: |
+          echo "RAFAY_API_KEY=8641449ab04961f5f975624a4cfcb0cd6e05c2fa" >> $GITHUB_ENV"
+          echo "RAFAY_API_SECRET=f5f16a4dff8521dd7eb3fca5f4a06fc9a3530e9925b42012d7c77f521555d789" >> $GITHUB_ENV"
+          
+      - name: "setting RAFAY_PROJECT_ID env var"
+        run: |
+          export RAFAY_PROJECT_ID=`curl -X 'GET' 'https://console.rafay.dev/v1/auth/projects/' -H 'accept: application/json' -H 'X-RAFAY-API-KEYID: ${{ env.RAFAY_API_KEY }}' | jq '.results[] | select(.name=="${{ github.event.inputs.rafay_project_name }}")' | jq '.id' | sed -e 's/^"//' -e 's/"$//'`
+          if [ -z "$RAFAY_PROJECT_ID" ]
+          then
+            echo "RAFAY_PROJECT_ID is empty , hence exiting"
+            exit 1
+          else
+            echo "RAFAY_PROJECT_ID=${RAFAY_PROJECT_ID}" >> $GITHUB_ENV
+            echo "RAFAY_PROJECT_ID is valid and it is $RAFAY_PROJECT_ID is "
+          fi
+          
+      - name: "setting RAFAY_CLUSTER_ID env var"
+        run: |
+          export RAFAY_CLUSTER_ID=`curl -X 'GET' 'https://console.rafay.dev/v1/infra/projects/${{ env.RAFAY_PROJECT_ID }}/clusters/' -H 'accept: application/json' -H 'X-RAFAY-API-KEYID: ${{ env.RAFAY_API_KEY }}' | jq '.results[] | select(.name=="${{ github.event.inputs.rafay_cluster_name }}")' | jq '.id' | sed -e 's/^"//' -e 's/"$//'`
+          if [ -z "$RAFAY_CLUSTER_ID" ]
+          then
+            echo "RAFAY_CLUSTER_ID is empty  , hence existing"
+            exit 1
+          else
+            echo "RAFAY_CLUSTER_ID=${RAFAY_CLUSTER_ID}" >> $GITHUB_ENV
+            echo "RAFAY_CLUSTER_ID is valid and it is $RAFAY_CLUSTER_ID is "
+          fi
+      
+      - name: Printing env variables
+        run: |
+
+          #printing github workflow input variables for debugging purpose
+          echo "RAFAY_PROJECT_ID is ${{ env.RAFAY_PROJECT_ID }}"
+          echo "RAFAY_CLUSTER_ID is ${{ env.RAFAY_CLUSTER_ID }}"
+          
+          
