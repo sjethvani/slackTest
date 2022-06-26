@@ -60,8 +60,8 @@ jobs:
           
       - name: "setting rafay key/secret"
         run: |
-          echo "RAFAY_API_KEY=8641449ab04961f5f975624a4cfcb0cd6e05c2fa" >> $GITHUB_ENV"
-          echo "RAFAY_API_SECRET=f5f16a4dff8521dd7eb3fca5f4a06fc9a3530e9925b42012d7c77f521555d789" >> $GITHUB_ENV"
+          echo "RAFAY_API_KEY=8641449ab04961f5f975624a4cfcb0cd6e05c2fa" >> $GITHUB_ENV
+          echo "RAFAY_API_SECRET=f5f16a4dff8521dd7eb3fca5f4a06fc9a3530e9925b42012d7c77f521555d789" >> $GITHUB_ENV
           
       - name: "setting RAFAY_PROJECT_ID env var"
         run: |
