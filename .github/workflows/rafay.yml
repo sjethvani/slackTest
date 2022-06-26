@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: Rafay
 
 # Controls when the workflow will run
 on:
@@ -68,9 +68,10 @@ jobs:
           export RAFAY_PROJECT_ID=`curl -X 'GET' 'https://console.rafay.dev/v1/auth/projects/' -H 'accept: application/json' -H 'X-RAFAY-API-KEYID: ${{ env.RAFAY_API_KEY }}' | jq '.results[] | select(.name=="${{ github.event.inputs.rafay_project_name }}")' | jq '.id' | sed -e 's/^"//' -e 's/"$//'`
           if [ -z "$RAFAY_PROJECT_ID" ]
           then
-            echo "RAFAY_PROJECT_ID is empty , hence exiting"
+            echo "Given rafay project name (${{ github.event.inputs.rafay_cluster_name }}) not found in Rafay. Please verify given project name at Rafay UI and re trigger this workflow with proper project name. Terminating script execution."
             exit 1
           else
+            echo "Given rafay project name(${{ github.event.inputs.rafay_cluster_name }}) exists in Rafay, setting project id in env variable"
             echo "RAFAY_PROJECT_ID=${RAFAY_PROJECT_ID}" >> $GITHUB_ENV
             echo "RAFAY_PROJECT_ID is valid and it is $RAFAY_PROJECT_ID is "
           fi
@@ -80,9 +81,10 @@ jobs:
           export RAFAY_CLUSTER_ID=`curl -X 'GET' 'https://console.rafay.dev/v1/infra/projects/${{ env.RAFAY_PROJECT_ID }}/clusters/' -H 'accept: application/json' -H 'X-RAFAY-API-KEYID: ${{ env.RAFAY_API_KEY }}' | jq '.results[] | select(.name=="${{ github.event.inputs.rafay_cluster_name }}")' | jq '.id' | sed -e 's/^"//' -e 's/"$//'`
           if [ -z "$RAFAY_CLUSTER_ID" ]
           then
-            echo "RAFAY_CLUSTER_ID is empty  , hence existing"
+            echo "Given rafay cluster name (${{ github.event.inputs.rafay_cluster_name }}) not found under rafay project (${{ github.event.inputs.rafay_project_name }}). Please verify given cluster name at Rafay UI and re trigger this workflow with proper cluster name. Terminating script execution."
             exit 1
           else
+            echo "Given rafay cluster name(${{ github.event.inputs.rafay_cluster_name }}) exists for given project in Rafay, setting cluster id in env variable"
             echo "RAFAY_CLUSTER_ID=${RAFAY_CLUSTER_ID}" >> $GITHUB_ENV
             echo "RAFAY_CLUSTER_ID is valid and it is $RAFAY_CLUSTER_ID is "
           fi
