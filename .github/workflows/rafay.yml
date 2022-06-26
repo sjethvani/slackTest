@@ -15,7 +15,7 @@ on:
         description: 'Rafay cluster name'
         required: true
       alationfc_version:
-        description: 'AlationFC helm chart image tag/version in semver format (for-ex 13.1.0-6374 , Major.Minor.Patch-AlationBuildGHWorkflowRunNo). By default Latest alationfc helm chart will be pulled'
+        description: '\nAlationFC helm chart image tag/version in semver format (for-ex 13.1.0-6374 , Major.Minor.Patch-AlationBuildGHWorkflowRunNo). By default Latest alationfc helm chart will be pulled'
         required: false
         default: 'Latest'
       preprovisioned_tenant_id:
@@ -68,7 +68,7 @@ jobs:
           export RAFAY_PROJECT_ID=`curl -X 'GET' 'https://console.rafay.dev/v1/auth/projects/' -H 'accept: application/json' -H 'X-RAFAY-API-KEYID: ${{ env.RAFAY_API_KEY }}' | jq '.results[] | select(.name=="${{ github.event.inputs.rafay_project_name }}")' | jq '.id' | sed -e 's/^"//' -e 's/"$//'`
           if [ -z "$RAFAY_PROJECT_ID" ]
           then
-            echo "Given rafay project name (${{ github.event.inputs.rafay_cluster_name }}) not found in Rafay. Please verify given project name at Rafay UI and re trigger this workflow with proper project name. Terminating script execution."
+            echo "Given rafay project name (${{ github.event.inputs.rafay_project_name }}) not found in Rafay. Please verify given project name at Rafay UI and re trigger this workflow with proper project name. Terminating script execution."
             exit 1
           else
             echo "Given rafay project name(${{ github.event.inputs.rafay_cluster_name }}) exists in Rafay, setting project id in env variable"
