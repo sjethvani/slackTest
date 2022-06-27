@@ -116,4 +116,6 @@ jobs:
           echo "RAFAY_PROJECT_ID is ${{ env.RAFAY_PROJECT_ID }}"
           echo "RAFAY_CLUSTER_ID is ${{ env.RAFAY_CLUSTER_ID }}"
           
+      - run: "echo \"\U0001F34F alationfc/core publish to Rafay development cluster status is ${{ job.status }}.\""
+        if: always()
           
