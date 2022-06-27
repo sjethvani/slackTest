@@ -59,7 +59,7 @@ jobs:
           echo "input preprovisioned_tenant_id is ${{ github.event.inputs.preprovisioned_tenant_id }}"
           
       - name: Retrieve latest alationfc helm chart version by parsing alation-fc.json file
-        if: ${{ github.event.inputs.alationfc_version }} == 'Latest'
+        if: ${{ github.event.inputs.alationfc_version == 'Latest' }}
         run: |
           #ALATION_FC_HELMCHART_VERSION=$(cat alation_installer_temp_checkout/versions/alation-fc.json | jq '.alationfc' | sed -e 's/^"//' -e 's/"$//')
           echo "ALATION_FC_HELMCHART_VERSION is ---- ${ALATION_FC_HELMCHART_VERSION}"
