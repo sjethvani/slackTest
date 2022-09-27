@@ -1,0 +1,45 @@
+# Github workflow to promote django qa build to prod 
+
+name: 'Promote django qa build to prod'
+on:
+  workflow_dispatch:
+    inputs:
+      build_no:
+        description: 'Django build no to be promoted from qa to prod'
+        required: true
+        type: string
+
+# vault permissions
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_DEFAULT_REGION: us-east-1
+  S3_PROD_BUCKET: s3://lyngo-build-artifacts-final-use1
+
+jobs:
+  lyngo-django-build-qa-to-prod-promote:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Printing given inputs
+        run: |
+          #printing github workflow input variables for debugging purpose
+          echo "workflow is triggered on branch ${GITHUB_REF}"
+          echo "input build_no is --> ${{ github.event.inputs.build_no }}"
+
+      - name: Import Lyngo Prod AWS Keys From Vault
+        uses: hashicorp/vault-action@v2.4.0
+        with:
+          url: https://vault.alationblue.com/
+          method: jwt
+          role: lyngo-prod-artifact-upload-aws-backend-role
+          secrets: |
+            aws-lyngo-prod/creds/lyngo-prod-artifact-upload-aws-backend-role access_key | AWS_ACCESS_KEY_ID ;
+            aws-lyngo-prod/creds/lyngo-prod-artifact-upload-aws-backend-role secret_key | AWS_SECRET_ACCESS_KEY ;
+
+      - name: Promote django build to prod and updating latest promoted django build no for prod environment
+        run: |
+          aws s3 cp "${{ env.S3_PROD_BUCKET }}/qa/elasticbeanstalk/django/${{ github.event.inputs.build_no }}/docker-compose-${{ github.event.inputs.build_no }}.zip" "${{ env.S3_PROD_BUCKET }}/prod/elasticbeanstalk/django/${{ github.event.inputs.build_no }}/docker-compose-${{ github.event.inputs.build_no }}.zip"
+          printf ${{ github.event.inputs.build_no }} > latest_django_build.txt
+          aws s3 cp ./latest_django_build.txt "${{ env.S3_PROD_BUCKET }}/prod/elasticbeanstalk/django/latest_django_build.txt"
