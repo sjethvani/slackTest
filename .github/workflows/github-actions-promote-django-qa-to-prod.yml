@@ -28,15 +28,25 @@ jobs:
           echo "workflow is triggered on branch ${GITHUB_REF}"
           echo "input build_no is --> ${{ github.event.inputs.build_no }}"
 
-      - name: Import Lyngo Prod AWS Keys From Vault
-        uses: hashicorp/vault-action@v2.4.0
+      # - name: Import Lyngo Prod AWS Keys From Vault
+      #   uses: hashicorp/vault-action@v2.4.0
+      #   with:
+      #     url: https://vault.alationblue.com/
+      #     method: jwt
+      #     role: lyngo-prod-artifact-upload-aws-backend-role
+      #     secrets: |
+      #       aws-lyngo-prod/creds/lyngo-prod-artifact-upload-aws-backend-role access_key | AWS_ACCESS_KEY_ID ;
+      #       aws-lyngo-prod/creds/lyngo-prod-artifact-upload-aws-backend-role secret_key | AWS_SECRET_ACCESS_KEY ;
+
+      - name: Configure AWS Credentials for AWS Engg
+        env:
+          AWS_DEFAULT_REGION: "us-east-1"      
+        id: configure_aws_eng_creds
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          url: https://vault.alationblue.com/
-          method: jwt
-          role: lyngo-prod-artifact-upload-aws-backend-role
-          secrets: |
-            aws-lyngo-prod/creds/lyngo-prod-artifact-upload-aws-backend-role access_key | AWS_ACCESS_KEY_ID ;
-            aws-lyngo-prod/creds/lyngo-prod-artifact-upload-aws-backend-role secret_key | AWS_SECRET_ACCESS_KEY ;
+          aws-access-key-id: ${{ secrets.LYNGO_PROD_AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.LYNGO_PROD_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
       - name: Promote django build to prod and updating latest promoted django build no for prod environment
         run: |
