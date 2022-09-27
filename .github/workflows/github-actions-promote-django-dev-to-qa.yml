@@ -51,6 +51,6 @@ jobs:
 
       - name: Promote django build to qa and updating latest promoted django build no for qa environment
         run: |
-          aws s3 cp "${{ env.S3_PROD_BUCKET }}/development/elasticbeanstalk/django/${{ github.event.inputs.build_no }/docker-compose-${{ github.event.inputs.build_no }}.zip" "${{ env.S3_PROD_BUCKET }}/qa/elasticbeanstalk/django/${{ github.event.inputs.build_no }}/docker-compose-${{ github.event.inputs.build_no }}.zip"
+          aws s3 cp "${{ env.S3_PROD_BUCKET }}/development/elasticbeanstalk/django/${{ github.event.inputs.build_no }}/docker-compose-${{ github.event.inputs.build_no }}.zip" "${{ env.S3_PROD_BUCKET }}/qa/elasticbeanstalk/django/${{ github.event.inputs.build_no }}/docker-compose-${{ github.event.inputs.build_no }}.zip"
           printf ${{ github.event.inputs.build_no } > latest_django_build.txt
           aws s3 cp ./latest_django_build.txt "${{ env.S3_PROD_BUCKET }}/qa/elasticbeanstalk/django/latest_django_build.txt"
