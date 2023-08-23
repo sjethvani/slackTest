@@ -35,7 +35,14 @@ jobs:
               print(f"Referring mthelm version tag for st-tenant-postgres-init, since given mthelm_version ${{ env.MTHELM_VERSION }} is >= 0.209.0")
               postgres_init_tag = "${{ env.MTHELM_VERSION }}"
           #print(postgres_init_tag)
-          os.environ['POSTGRES_INIT_TAG'] = postgres_init_tag
+          #os.environ['POSTGRES_INIT_TAG'] = postgres_init_tag
+
+          with open(os.environ['GITHUB_ENV'], 'a') as fh:
+            print(f'POSTGRES_INIT_TAG={postgres_init_tag}', file=fh)
+
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+            print(f'POSTGRES_INIT_TAG={postgres_init_tag}', file=fh)
+
         shell: python
 
       - name: Outputting manifest information for later use
@@ -44,8 +51,6 @@ jobs:
             # storing vars in github output (so that other jobs can use it)
             echo "MTHELM_VERSION=${{ env.MTHELM_VERSION }}" >> "$GITHUB_OUTPUT"
             echo "ALATIONFC_VERSION=${{ env.ALATIONFC_VERSION }}" >> "$GITHUB_OUTPUT"
-          
-            $(python script.py)
             echo "POSTGRES_INIT_TAG=${{ env.POSTGRES_INIT_TAG }}" >> "$GITHUB_OUTPUT"
 
   # This workflow contains a single job called "build"
