@@ -11,6 +11,10 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   pythonrun:
+    outputs:
+      MTHELM_VERSION: ${{ steps.manifest_information.outputs.MTHELM_VERSION }}
+      ALATIONFC_VERSION: ${{ steps.manifest_information.outputs.ALATIONFC_VERSION }}
+      POSTGRES_INIT_TAG: ${{ steps.manifest_information.outputs.POSTGRES_INIT_TAG }}  
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -65,6 +69,6 @@ jobs:
       # Runs a single command using the runners shell
       - name: printing_outputs
         run: |
-          echo "MTHELM_VERSION --> ${{ needs.pythonrun.outputs.MTHELM_VERSION }}"
-          echo "ALATIONFC_VERSION --> ${{ needs.pythonrun.outputs.ALATIONFC_VERSION }}"
-          echo "POSTGRES_INIT_TAG --> ${{ needs.pythonrun.outputs.POSTGRES_INIT_TAG }}"
+          echo "MTHELM_VERSION --> ${{needs.pythonrun.outputs.MTHELM_VERSION}}"
+          echo "ALATIONFC_VERSION --> ${{needs.pythonrun.outputs.ALATIONFC_VERSION}}"
+          echo "POSTGRES_INIT_TAG --> ${{needs.pythonrun.outputs.POSTGRES_INIT_TAG}}"
