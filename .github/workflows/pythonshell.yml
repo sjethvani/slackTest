@@ -30,10 +30,10 @@ jobs:
           from packaging import version
           # AL-129737 st-tenant-postgres-init is moved into alation_mt_helm_charts repo and it will have same tag as post-install and st-tenant-deploy from now and not the same as alationfc tag
           # Refer mthelm version tag for st-tenant-postgres-init for mthelm_version >= 0.209.0 (tag in which this change was merged), else let it refer alationfc version (for backward compatibility)
-          postgres_init_tag = ${{ env.ALATIONFC_VERSION }}
-          if version.parse(${{ env.MTHELM_VERSION }}) >= version.parse("0.209.0"):
-              print(f"Referring mthelm version tag for st-tenant-postgres-init, since given mthelm_version {mthelm_version} is >= 0.209.0")
-              postgres_init_tag = ${{ env.MTHELM_VERSION }}
+          postgres_init_tag = "${{ env.ALATIONFC_VERSION }}"
+          if version.parse("${{ env.MTHELM_VERSION }}") >= version.parse("0.209.0"):
+              print(f"Referring mthelm version tag for st-tenant-postgres-init, since given mthelm_version ${{ env.MTHELM_VERSION }} is >= 0.209.0")
+              postgres_init_tag = "${{ env.MTHELM_VERSION }}"
           #print(postgres_init_tag)
           os.environ['POSTGRES_INIT_TAG'] = postgres_init_tag
         shell: python
