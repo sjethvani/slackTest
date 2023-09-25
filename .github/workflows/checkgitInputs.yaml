@@ -19,7 +19,7 @@ jobs:
             #printing github workflow input variables for debugging purpose
             echo "workflow is triggered on branch ${GITHUB_REF}"
             echo "input is_trigger is --> ${{ inputs.is_trigger }}"
-      - name: Printing given inputs
+      - name: Conditional_Step
         if: ${{ inputs.is_trigger}}
         run: |
             echo "This step gets executed"
