@@ -20,6 +20,6 @@ jobs:
             echo "workflow is triggered on branch ${GITHUB_REF}"
             echo "input is_trigger is --> ${{ inputs.is_trigger }}"
       - name: Conditional_Step
-        if: ${{ inputs.is_trigger == 'true' }}
+        if: ${{ inputs.is_trigger }}
         run: |
             echo "This step gets executed"
