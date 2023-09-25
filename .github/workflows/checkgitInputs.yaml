@@ -1,0 +1,25 @@
+# Github workflow to check inputs type
+
+name: 'Checking GithubInputs'
+on:
+  workflow_dispatch:
+    inputs:
+      is_trigger:
+        description: 'Some boolean input'
+        required: true
+        default: true
+        type: boolean
+
+jobs:
+  check:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Printing given inputs
+        run: |
+            #printing github workflow input variables for debugging purpose
+            echo "workflow is triggered on branch ${GITHUB_REF}"
+            echo "input is_trigger is --> ${{ inputs.is_trigger }}"
+      - name: Printing given inputs
+        if: ${{ inputs.is_trigger}}
+        run: |
+            echo "This step gets executed"
