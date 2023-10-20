@@ -126,7 +126,7 @@ jobs:
         aws s3 cp ./${{ env.DEFAULT_MANIFEST_FILE_NAME }} ${{ env.S3_MANIFEST_PROD_BUCKET }}/${{ env.DEFAULT_MANIFEST_FILE_NAME }}
       
 
-'on':
+on:
   workflow_dispatch:
     inputs:
       zeus_cluster_name:
