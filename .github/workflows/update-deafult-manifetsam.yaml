@@ -1,0 +1,158 @@
+# This github workflow updates default_manifest_conf.json in st manifest s3 folder
+
+# This github workflow called update-default-manifest does following things 
+# 1) updates default_manifest_conf.json specifying default st manifest for given cluster
+# inputs :  default_st_manifest_name, zeus_cluster_name
+
+
+# Flow
+# Triggered manually by passing appropriate inputs
+# 'update_default_manifest_eng_clusters' job updates deafult manifest value for given dev or qa or seprod zeus cluster in eng s3 bucket
+
+# 'update_default_manifest_prod_clusters' job updates deafult manifest value for given stage or prod zeus cluster in prod s3 bucket
+## this job has following protection rules through github environment(`Prod`)
+#### `Prod` github env is configured with following protections
+#### 1) It runs only when GH workflow is triggered from main branch
+#### 2) It waits for approvals from one of member of Alation/teams/ci_cd_demote_manifest_admins team
+
+run-name: "Update default st manifest ${{ inputs.default_st_manifest_name }} for cluster ${{ inputs.zeus_cluster_name }}"
+
+env:
+  AWS_DEFAULT_REGION: us-east-2
+  S3_MANIFEST_ENG_BUCKET: s3://alation-eng-st-manifests # S3 bucket of eng aws account
+  S3_MANIFEST_PROD_BUCKET: s3://alation-prod-st-manifests # S3 bucket of prod aws account
+  DEFAULT_MANIFEST_FILE_NAME: default_manifest_conf.json
+
+jobs:
+  update_default_manifest_eng_clusters:
+    if: ${{ startsWith(inputs.zeus_cluster_name, 'development') || startsWith(inputs.zeus_cluster_name, 'qa') || startsWith(inputs.zeus_cluster_name, 'seprod') }}    
+    runs-on: ubuntu-20.04
+    steps:
+
+    - name: Check out repository code
+      uses: actions/checkout@v2
+
+    - name: Inject inputs to environment vars
+      run: |
+           echo "DEFAULT_MANIFEST_NAME=${{ inputs.default_st_manifest_name }}" >> $GITHUB_ENV
+           echo "ZEUS_CLUSTER_NAME=${{ inputs.zeus_cluster_name }}" >> $GITHUB_ENV
+
+    - name: Import one time use aws engg acc keys from vault
+      uses: hashicorp/vault-action@v2.5.0
+      with:
+        method: jwt
+        role: aws-engineering-admin
+        secrets: |
+          aws-engineering/creds/engineering-admin access_key | AWS_ACCESS_KEY_ID ;
+          aws-engineering/creds/engineering-admin secret_key | AWS_SECRET_ACCESS_KEY ;
+        url: https://vault.alationblue.com/
+
+    - name: Sleep for secrets
+      run: sleep 10
+
+    - name: Push empty default manifest file if it doesn't exist in s3 bucket
+      run: |
+        # check if default manifest file exists in s3 bucket , (if not then push empty file)
+        file_exists = $(aws s3 ls ${{ env.S3_MANIFEST_ENG_BUCKET }}/${{ env.DEFAULT_MANIFEST_FILE_NAME }} | wc -l | xargs)
+        if [ "$file_exists" == 0 ]; then
+          echo "${{ env.DEFAULT_MANIFEST_FILE_NAME }} file doesn't exists in eng ${{ env.S3_MANIFEST_ENG_BUCKET }} bucket"
+          echo "Pushing empty ${{ env.DEFAULT_MANIFEST_FILE_NAME }} file to eng ${{ env.S3_MANIFEST_ENG_BUCKET }} bucket"
+          touch ${{ env.DEFAULT_MANIFEST_FILE_NAME }}
+          aws s3 cp ${{ env.DEFAULT_MANIFEST_FILE_NAME }} ${{ env.S3_MANIFEST_ENG_BUCKET }}/${{ env.DEFAULT_MANIFEST_FILE_NAME }}
+        fi
+
+    - name: Download default manifest json file from s3 bucket
+      run: |
+        # download deafult manifest json file from s3 bucket
+        aws s3 cp ${{ env.S3_MANIFEST_ENG_BUCKET }}/${{ env.DEFAULT_MANIFEST_FILE_NAME }} .
+
+    - name: Update default manifest for given zeus cluster
+      run: 'python3 -c ''import json; import os;file=open("./${{ env.DEFAULT_MANIFEST_FILE_NAME }}", "w+");json.dump({"${{ inputs.zeus_cluster_name }}":"${{ inputs.default_st_manifest_name }}"}, file);file.close()''
+
+    - name: Upload updated default manifest in s3
+      run: |
+        # upload updated deafult manifest json file from s3 bucket
+        aws s3 cp ./${{ env.DEFAULT_MANIFEST_FILE_NAME }} ${{ env.S3_MANIFEST_ENG_BUCKET }}/${{ env.DEFAULT_MANIFEST_FILE_NAME }}
+
+  update_default_manifest_prod_clusters:
+    if: ${{ startsWith(inputs.zeus_cluster_name, 'stage') || startsWith(inputs.zeus_cluster_name, 'prod') }}
+    runs-on: ubuntu-20.04
+    steps:
+
+    - name: Check out repository code
+      uses: actions/checkout@v2
+
+    - name: Inject inputs to environment vars
+      run: |
+           echo "DEFAULT_MANIFEST_NAME=${{ inputs.default_st_manifest_name }}" >> $GITHUB_ENV
+           echo "ZEUS_CLUSTER_NAME=${{ inputs.zeus_cluster_name }}" >> $GITHUB_ENV
+
+    - name: Import one time use production aws Secret from vault
+      uses: hashicorp/vault-action@v2.4.3
+      with:
+        method: jwt
+        role: aws-managed-services-st-manifest-s3-upload-user
+        secrets: |
+          aws-managed-services/creds/aws-managed-services-st-manifest-s3-upload-user access_key | AWS_ACCESS_KEY_ID ;
+          aws-managed-services/creds/aws-managed-services-st-manifest-s3-upload-user secret_key | AWS_SECRET_ACCESS_KEY ;
+        url: https://vault.alationblue.com/
+
+    - name: Sleep for secrets
+      run: sleep 10
+
+    - name: Push empty default manifest file if it doesn't exist in s3 bucket
+      run: |
+        # check if default manifest file exists in s3 bucket , (if not then push empty file)
+        file_exists = $(aws s3 ls ${{ env.S3_MANIFEST_PROD_BUCKET }}/${{ env.DEFAULT_MANIFEST_FILE_NAME }} | wc -l | xargs)
+        if [ "$file_exists" == 0 ]; then
+          echo "${{ env.DEFAULT_MANIFEST_FILE_NAME }} file doesn't exists in Prod ${{ env.S3_MANIFEST_PROD_BUCKET }} bucket"
+          echo "Pushing empty ${{ env.DEFAULT_MANIFEST_FILE_NAME }} file to Prod ${{ env.S3_MANIFEST_PROD_BUCKET }} bucket"
+          touch ${{ env.DEFAULT_MANIFEST_FILE_NAME }}
+          aws s3 cp ${{ env.DEFAULT_MANIFEST_FILE_NAME }} ${{ env.S3_MANIFEST_PROD_BUCKET }}/${{ env.DEFAULT_MANIFEST_FILE_NAME }}
+        fi
+
+    - name: Download default manifest json file from s3 bucket
+      run: |
+        # download deafult manifest json file from s3 bucket
+        aws s3 cp ${{ env.S3_MANIFEST_PROD_BUCKET }}/${{ env.DEFAULT_MANIFEST_FILE_NAME }} .
+
+    - name: Update default manifest for given zeus cluster
+      run: 'python3 -c ''import json; import os;file=open("./${{ env.DEFAULT_MANIFEST_FILE_NAME }}", "w+");json.dump({"${{ inputs.zeus_cluster_name }}":"${{ inputs.default_st_manifest_name }}"}, file);file.close()''
+
+    - name: Upload updated default manifest in s3
+      run: |
+        # upload updated deafult manifest json file from s3 bucket
+        aws s3 cp ./${{ env.DEFAULT_MANIFEST_FILE_NAME }} ${{ env.S3_MANIFEST_PROD_BUCKET }}/${{ env.DEFAULT_MANIFEST_FILE_NAME }}
+      
+
+'on':
+  workflow_dispatch:
+    inputs:
+      zeus_cluster_name:
+        description: ST Manifest folder name (for-ex 2023.1.7-mthelm-0.161.0-alation-16.7.0-41637)
+        required: true
+        type: choice
+        options:
+          - development-enterprise
+          - development-enterprise-use1
+          - development-shared
+          - qa-enterprise-use1
+          - qa-enterprise-use2
+          - qa-shared
+          - seprod-enterprise-use1
+          - stage-enterprise-use2
+          - prod-enterprise-use1
+          - prod-enterprise-usw2
+          - prod-shared-use1
+          - prod-enterprise-apne1
+          - prod-enterprise-apse1
+          - prod-enterprise-apse2
+          - prod-enterprise-euc1
+          - prod-enterprise-euw1
+      default_st_manifest_name:
+        description: Default st manifest to set for cluster (for-ex 2023.1.7-mthelm-0.161.0-alation-16.7.0-41637)
+        required: true
+        type: string     
+permissions:
+  contents: read
+  id-token: write
