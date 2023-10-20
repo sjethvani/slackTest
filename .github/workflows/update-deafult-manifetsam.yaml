@@ -67,7 +67,8 @@ jobs:
         aws s3 cp ${{ env.S3_MANIFEST_ENG_BUCKET }}/${{ env.DEFAULT_MANIFEST_FILE_NAME }} .
 
     - name: Update default manifest for given zeus cluster
-      run: 'python3 -c ''import json; import os;file=open("./${{ env.DEFAULT_MANIFEST_FILE_NAME }}", "w+");json.dump({"${{ inputs.zeus_cluster_name }}":"${{ inputs.default_st_manifest_name }}"}, file);file.close()''
+      run: |
+        python3 -c ''import json; import os;file=open("./${{ env.DEFAULT_MANIFEST_FILE_NAME }}", "w+");json.dump({"${{ inputs.zeus_cluster_name }}":"${{ inputs.default_st_manifest_name }}"}, file);file.close()''
 
     - name: Upload updated default manifest in s3
       run: |
