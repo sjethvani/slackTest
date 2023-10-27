@@ -222,45 +222,45 @@ on:
         required: true
         default: false
         type: boolean
-      prod-enterprise-usw2:
-        description: "prod-enterprise-usw2 zeus cluster"
-        required: true
-        default: false
-        type: boolean
-      prod-shared-use1:
-        description: "prod-shared-use1 zeus cluster"
-        required: true
-        default: false
-        type: boolean
-      prod-enterprise-apne1:
-        description: "prod-enterprise-apne1 zeus cluster"
-        required: true
-        default: false
-        type: boolean
-      prod-enterprise-apse1:
-        description: "prod-enterprise-apse1 zeus cluster"
-        required: true
-        default: false
-        type: boolean
-      prod-enterprise-apse2:
-        description: "prod-enterprise-apse2 zeus cluster"
-        required: true
-        default: false
-        type: boolean
-      prod-enterprise-euc1:
-        description: "prod-enterprise-euc1 zeus cluster"
-        required: true
-        default: false
-        type: boolean
-      prod-enterprise-euw1:
-        description: "prod-enterprise-euw1 zeus cluster"
-        required: true
-        default: false
-        type: boolean
-      default_st_manifest_name:
-        description: Default st manifest to set for cluster (for-ex 2023.1.7-mthelm-0.161.0-alation-16.7.0-41637)
-        required: true
-        type: string     
+      # prod-enterprise-usw2:
+      #   description: "prod-enterprise-usw2 zeus cluster"
+      #   required: true
+      #   default: false
+      #   type: boolean
+      # prod-shared-use1:
+      #   description: "prod-shared-use1 zeus cluster"
+      #   required: true
+      #   default: false
+      #   type: boolean
+      # prod-enterprise-apne1:
+      #   description: "prod-enterprise-apne1 zeus cluster"
+      #   required: true
+      #   default: false
+      #   type: boolean
+      # prod-enterprise-apse1:
+      #   description: "prod-enterprise-apse1 zeus cluster"
+      #   required: true
+      #   default: false
+      #   type: boolean
+      # prod-enterprise-apse2:
+      #   description: "prod-enterprise-apse2 zeus cluster"
+      #   required: true
+      #   default: false
+      #   type: boolean
+      # prod-enterprise-euc1:
+      #   description: "prod-enterprise-euc1 zeus cluster"
+      #   required: true
+      #   default: false
+      #   type: boolean
+      # prod-enterprise-euw1:
+      #   description: "prod-enterprise-euw1 zeus cluster"
+      #   required: true
+      #   default: false
+      #   type: boolean
+      # default_st_manifest_name:
+      #   description: Default st manifest to set for cluster (for-ex 2023.1.7-mthelm-0.161.0-alation-16.7.0-41637)
+      #   required: true
+      #   type: string     
 permissions:
   contents: read
   id-token: write
