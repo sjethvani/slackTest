@@ -73,20 +73,21 @@ jobs:
       run: |
         import json; 
         import os;
+        print("dev-ent is --> ${{ inputs.development-enterprise }}")
         file=open("./${{ env.DEFAULT_MANIFEST_FILE_NAME }}", "w+");
-        if "${{ inputs.development-enterprise }}":
+        if "${{ inputs.development-enterprise }}" == "true":
           json.dump({"development-enterprise":"${{ inputs.default_st_manifest_name }}"}, file);
-        if "${{ inputs.development-enterprise-use1 }}":
+        if "${{ inputs.development-enterprise-use1 }}" == "true":
           json.dump({"development-enterprise-use1":"${{ inputs.default_st_manifest_name }}"}, file);
-        if "${{ inputs.development-shared }}":
+        if "${{ inputs.development-shared }}" == "true":
           json.dump({"development-shared":"${{ inputs.default_st_manifest_name }}"}, file);
-        if "${{ inputs.qa-enterprise-use1 }}":
+        if "${{ inputs.qa-enterprise-use1 }}" == "true":
           json.dump({"qa-enterprise-use1":"${{ inputs.default_st_manifest_name }}"}, file);
-        if "${{ inputs.qa-enterprise-use2 }}":
+        if "${{ inputs.qa-enterprise-use2 }}" == "true":
           json.dump({"qa-enterprise-use2":"${{ inputs.default_st_manifest_name }}"}, file);
-        if "${{ inputs.qa-shared }}":
+        if "${{ inputs.qa-shared }}" == "true":
           json.dump({"qa-shared":"${{ inputs.default_st_manifest_name }}"}, file);
-        if "${{ inputs.seprod-enterprise-use1 }}":
+        if "${{ inputs.seprod-enterprise-use1 }}" == "true":
           json.dump({"seprod-enterprise-use1":"${{ inputs.default_st_manifest_name }}"}, file);
         file.close()
       shell: python
