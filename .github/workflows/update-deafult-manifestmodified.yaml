@@ -38,8 +38,8 @@ jobs:
 
     - name: parse
       run: |
-        given_clusters = ${{ inputs.zeus_clusters }}.split(',')
-        approved_clusters = ${{ env.APPROVED_ZEUS_CLUSTER_LIST }}.split(',')
+        given_clusters = "${{ inputs.zeus_clusters }}".split(',')
+        approved_clusters = "${{ env.APPROVED_ZEUS_CLUSTER_LIST }}".split(',')
         
         print(f"Given zeus clusters are {given_clusters}")
         print(f"Approved zeus clusters are {approved_clusters}")
