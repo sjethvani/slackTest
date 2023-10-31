@@ -74,18 +74,18 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     
-    - name: Import one time use aws engg acc keys from vault
-      uses: hashicorp/vault-action@v2.5.0
-      with:
-        method: jwt
-        role: aws-engineering-admin
-        secrets: |
-          aws-engineering/creds/engineering-admin access_key | AWS_ACCESS_KEY_ID ;
-          aws-engineering/creds/engineering-admin secret_key | AWS_SECRET_ACCESS_KEY ;
-        url: https://vault.alationblue.com/
+    # - name: Import one time use aws engg acc keys from vault
+    #   uses: hashicorp/vault-action@v2.5.0
+    #   with:
+    #     method: jwt
+    #     role: aws-engineering-admin
+    #     secrets: |
+    #       aws-engineering/creds/engineering-admin access_key | AWS_ACCESS_KEY_ID ;
+    #       aws-engineering/creds/engineering-admin secret_key | AWS_SECRET_ACCESS_KEY ;
+    #     url: https://vault.alationblue.com/
 
-    - name: Sleep for secrets
-      run: sleep 10
+    # - name: Sleep for secrets
+    #   run: sleep 10
 
     # - name: Push empty default manifest file if it doesn't exist in s3 bucket
     #   run: |
@@ -130,21 +130,21 @@ jobs:
     needs: parseinputs
     if: ${{ needs.parseinputs.outputs.GIVEN_PROD_CLUSTERS != '[]' }}
     runs-on: ubuntu-20.04
-    environment: Prod
+    # environment: Prod
     steps:
 
-    - name: Import one time use production aws Secret from vault
-      uses: hashicorp/vault-action@v2.4.3
-      with:
-        method: jwt
-        role: aws-managed-services-st-manifest-s3-upload-user
-        secrets: |
-          aws-managed-services/creds/aws-managed-services-st-manifest-s3-upload-user access_key | AWS_ACCESS_KEY_ID ;
-          aws-managed-services/creds/aws-managed-services-st-manifest-s3-upload-user secret_key | AWS_SECRET_ACCESS_KEY ;
-        url: https://vault.alationblue.com/
+    # - name: Import one time use production aws Secret from vault
+    #   uses: hashicorp/vault-action@v2.4.3
+    #   with:
+    #     method: jwt
+    #     role: aws-managed-services-st-manifest-s3-upload-user
+    #     secrets: |
+    #       aws-managed-services/creds/aws-managed-services-st-manifest-s3-upload-user access_key | AWS_ACCESS_KEY_ID ;
+    #       aws-managed-services/creds/aws-managed-services-st-manifest-s3-upload-user secret_key | AWS_SECRET_ACCESS_KEY ;
+    #     url: https://vault.alationblue.com/
 
-    - name: Sleep for secrets
-      run: sleep 10
+    # - name: Sleep for secrets
+    #   run: sleep 10
 
     # - name: Push empty default manifest file if it doesn't exist in prod s3 bucket
     #   run: |
