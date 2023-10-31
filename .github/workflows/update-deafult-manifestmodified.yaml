@@ -55,7 +55,7 @@ jobs:
         prod_clusters = []
 
         for item in given_clusters:
-          if 'stage' in item or 'prod' in item:
+          if 'stage' in item or ('prod' in item and 'seprod' not in item):
             print(f"cluster -> {item} is of prod type")
             prod_clusters.append(item)
           else:
