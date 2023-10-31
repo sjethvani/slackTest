@@ -46,7 +46,7 @@ jobs:
         print(f"Approved zeus clusters are {approved_clusters}")
         if not all(item in approved_clusters for item in given_clusters):
           print(f"Given zeus cluster list -> {given_clusters} is not subset of Approved zeus cluster list -> {approved_clusters}")
-          print("Terminating execution...")
+          print("Hence. Terminating execution...")
           exit(1)
 
         is_any_eng_cluster = "false"
@@ -87,6 +87,15 @@ jobs:
            echo "IS_ANY_ENG_CLUSTER=${{ env.IS_ANY_ENG_CLUSTER }}" >> "$GITHUB_OUTPUT"
            echo "IS_ANY_PROD_CLUSTER=${{ env.IS_ANY_PROD_CLUSTER }}" >> "$GITHUB_OUTPUT"
 
+  somejob:
+    needs: parseinputs
+    if: ${{ needs.parseinputs.outputs.GIVEN_ENG_CLUSTERS != null }}
+    runs-on: ubuntu-20.04
+    steps:
+    - name: test
+      run: |
+        touch ${{ env.DEFAULT_MANIFEST_FILE_NAME }} 
+        echo "${{ toJSON(github.event.inputs) }}"
 
   update_default_manifest_eng_clusters:
     needs: parseinputs
@@ -96,7 +105,6 @@ jobs:
 
     - name: Check out repository code
       uses: actions/checkout@v2
-
 
     - name: Output Inputs
       run: |
@@ -108,14 +116,14 @@ jobs:
         import json; 
         import os;
         print("given eng clusters are --> ${{ needs.parseinputs.outputs.GIVEN_ENG_CLUSTERS }}")
-        manifestdict = {}
+        defaultmanifestdict = {}
         for item in ${{ needs.parseinputs.outputs.GIVEN_ENG_CLUSTERS }}:
-          manifestdict[item] = "${{ inputs.default_st_manifest_name }}"
+          defaultmanifestdict[item] = "${{ inputs.default_st_manifest_name }}"
         
-        print(f"manifestdict is {manifestdict}")
+        print(f"defaultmanifestdict is {defaultmanifestdict}")
         
         file=open("./${{ env.DEFAULT_MANIFEST_FILE_NAME }}", "w+");
-        json.dump(manifestdict, file, indent=4);
+        json.dump(defaultmanifestdict, file, indent=4);
         file.close()
       shell: python
 
