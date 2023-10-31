@@ -99,15 +99,24 @@ jobs:
 
 
     - name: Output Inputs
-      run: echo "${{ toJSON(github.event.inputs) }}"           
+      run: |
+        touch ${{ env.DEFAULT_MANIFEST_FILE_NAME }} 
+        echo "${{ toJSON(github.event.inputs) }}"           
 
     - name: Update default manifest for given eng zeus cluster/s
       run: |
         import json; 
         import os;
         print("given eng clusters are --> ${{ needs.parseinputs.outputs.GIVEN_ENG_CLUSTERS }}")
-
+        file=open("./${{ env.DEFAULT_MANIFEST_FILE_NAME }}", "w+");
+        for item in ${{ needs.parseinputs.outputs.GIVEN_ENG_CLUSTERS }}:
+          json.dump({item:"${{ inputs.default_st_manifest_name }}"}, file);
+        file.close()
       shell: python
+
+    - name: Printing file
+      run: |
+        cat ${{ env.DEFAULT_MANIFEST_FILE_NAME }}
 
 on:
   workflow_dispatch:
