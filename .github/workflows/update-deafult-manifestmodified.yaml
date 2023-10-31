@@ -94,8 +94,6 @@ jobs:
     steps:
     - name: test
       run: |
-        #touch ${{ env.DEFAULT_MANIFEST_FILE_NAME }} 
-        #echo "${{ toJSON(github.event.inputs) }}"
         echo "${{ needs.parseinputs.outputs.GIVEN_ENG_CLUSTERS }}"
 
   update_default_manifest_eng_clusters:
