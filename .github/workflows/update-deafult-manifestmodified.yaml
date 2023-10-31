@@ -22,12 +22,7 @@ env:
   S3_MANIFEST_ENG_BUCKET: s3://alation-eng-st-manifests # S3 bucket of eng aws account
   S3_MANIFEST_PROD_BUCKET: s3://alation-prod-st-manifests # S3 bucket of prod aws account
   DEFAULT_MANIFEST_FILE_NAME: default_manifest_conf.json
-  APPROVED_ZEUS_CLUSTER_LIST: devlopment-enterprise,
-                              development-enterprise-use1,\
-                              development-shared,\
-                              qa-enterprise-use1,\
-                              qa-enterprise-use2,\
-                              qa-shared
+  APPROVED_ZEUS_CLUSTER_LIST: devlopment-enterprise,development-enterprise-use1,development-shared,qa-enterprise-use1,qa-enterprise-use2,qa-shared
 
 jobs:
   parseinputs:
