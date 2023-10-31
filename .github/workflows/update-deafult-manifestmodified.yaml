@@ -29,8 +29,6 @@ jobs:
     outputs:
       GIVEN_ENG_CLUSTERS: ${{ steps.parsing_information.outputs.GIVEN_ENG_CLUSTERS }}
       GIVEN_PROD_CLUSTERS: ${{ steps.parsing_information.outputs.GIVEN_PROD_CLUSTERS }}
-      IS_ANY_ENG_CLUSTER: ${{ steps.parsing_information.outputs.IS_ANY_ENG_CLUSTER }}
-      IS_ANY_PROD_CLUSTER: ${{ steps.parsing_information.outputs.IS_ANY_PROD_CLUSTER }} 
     runs-on: ubuntu-20.04
     steps:
     - name: check
@@ -49,8 +47,6 @@ jobs:
           print("Hence. Terminating execution...")
           exit(1)
 
-        is_any_eng_cluster = "false"
-        is_any_prod_cluster = "false"
         eng_clusters =  [] 
         prod_clusters = []
 
@@ -61,18 +57,9 @@ jobs:
           else:
             print(f"cluster -> {item} is of eng type")
             eng_clusters.append(item)
-        
-        if eng_clusters:
-          print("there are some eng clusters")
-          is_any_eng_cluster = "true"
-        if prod_clusters:
-          print("there are some prod clusters")
-          is_any_prod_cluster = "true"
          
         # exporting github env variable
         with open(os.environ['GITHUB_ENV'], 'a') as fh:
-          print(f'IS_ANY_ENG_CLUSTER={is_any_eng_cluster}', file=fh)
-          print(f'IS_ANY_PROD_CLUSTER={is_any_prod_cluster}', file=fh)
           print(f'GIVEN_ENG_CLUSTERS={eng_clusters}', file=fh)
           print(f'GIVEN_PROD_CLUSTERS={prod_clusters}', file=fh)
       
@@ -84,21 +71,10 @@ jobs:
            # storing vars in github output (so that other jobs can use it)
            echo "GIVEN_ENG_CLUSTERS=${{ env.GIVEN_ENG_CLUSTERS }}" >> "$GITHUB_OUTPUT"
            echo "GIVEN_PROD_CLUSTERS=${{ env.GIVEN_PROD_CLUSTERS }}" >> "$GITHUB_OUTPUT"
-           echo "IS_ANY_ENG_CLUSTER=${{ env.IS_ANY_ENG_CLUSTER }}" >> "$GITHUB_OUTPUT"
-           echo "IS_ANY_PROD_CLUSTER=${{ env.IS_ANY_PROD_CLUSTER }}" >> "$GITHUB_OUTPUT"
-
-  somejob:
-    needs: parseinputs
-    if: ${{ needs.parseinputs.outputs.GIVEN_ENG_CLUSTERS != '[]' }}
-    runs-on: ubuntu-20.04
-    steps:
-    - name: test
-      run: |
-        echo "${{ needs.parseinputs.outputs.GIVEN_ENG_CLUSTERS }}"
 
   update_default_manifest_eng_clusters:
     needs: parseinputs
-    if: ${{ fromJSON(needs.parseinputs.outputs.IS_ANY_ENG_CLUSTER) }}
+    if: ${{ needs.parseinputs.outputs.GIVEN_ENG_CLUSTERS != '[]' }}
     runs-on: ubuntu-20.04
     steps:
 
