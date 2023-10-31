@@ -43,7 +43,7 @@ jobs:
         
         print(f"Given zeus clusters are {given_clusters}")
         print(f"Approved zeus clusters are {approved_clusters}")
-        if not given_clusters in approved_clusters:
+        if not all(item in approved_clusters for item in given_clusters):
           print(f"Given zeus cluster list -> {given_clusters} is not subset of Approved zeus cluster list -> {approved_clusters}")
           print("Terminating execution...")
           exit(1)
