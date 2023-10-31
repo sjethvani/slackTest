@@ -89,7 +89,7 @@ jobs:
 
   somejob:
     needs: parseinputs
-    if: ${{ needs.parseinputs.outputs.GIVEN_ENG_CLUSTERS != null }}
+    if: ${{ needs.parseinputs.outputs.GIVEN_ENG_CLUSTERS != '[]' }}
     runs-on: ubuntu-20.04
     steps:
     - name: test
