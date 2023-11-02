@@ -15,7 +15,7 @@
 #### `Prod` github env is configured with following protections
 #### 1) It runs only when GH workflow is triggered from main branch
 #### 2) It waits for approvals from one of member of Alation/teams/ci_cd_demote_manifest_admins team
-
+name: "Set default st manifest"
 run-name: "Set default st manifest ${{ inputs.default_st_manifest_name }} for clusters ${{ inputs.zeus_clusters }}"
 concurrency: set-default-manifest
 env:
