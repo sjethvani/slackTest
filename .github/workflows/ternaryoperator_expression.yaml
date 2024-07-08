@@ -1,0 +1,30 @@
+name: Ternary operator expression GH workflow
+
+run-name: "Ternary operator expression ${{ inputs.blueprint_name }} - ${{ inputs.is_blueprint_for_fedramp_rafay }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      blueprint_name:
+        type: choice
+        description: Name of the blueprint
+        options:
+          - infra-solo-fips-terraform-1-25
+      is_blueprint_for_fedramp_rafay:
+        type: boolean
+        description: "Building for fedramp on-prem rafay"
+        default: false
+
+env:
+  runner_target: ${{ inputs.is_blueprint_for_fedramp_rafay == 'true' && 'ubuntu-latest' || '${{ vars.FEDRAMP_ZEUS_CLUSTER_NAME }}-general' }}
+
+jobs:
+
+  get_tag:
+    if: ${{ (github.event_name == 'workflow_dispatch') }}
+    runs-on: [ "${{ env.runner_target }}" ]
+    steps:
+      - name: Printing file
+        run: |
+          echo "runner_target is ${{ env.runner_target }}"
+
