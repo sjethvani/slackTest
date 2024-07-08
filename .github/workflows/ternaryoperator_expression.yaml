@@ -15,16 +15,12 @@ on:
         description: "Building for fedramp on-prem rafay"
         default: false
 
-env:
-  runner_target: ${{ inputs.is_blueprint_for_fedramp_rafay == 'true' && 'ubuntu-latest' || '${{ vars.FEDRAMP_ZEUS_CLUSTER_NAME }}-general' }}
-
 jobs:
 
   get_tag:
     if: ${{ (github.event_name == 'workflow_dispatch') }}
-    runs-on: [ "${{ env.runner_target }}" ]
+    runs-on: ${{ contains(github.server_url, 'https://github.com') && 'ubuntu-latest' || '${{ vars.FEDRAMP_ZEUS_CLUSTER_NAME }}-general' }}
     steps:
       - name: Printing file
         run: |
-          echo "runner_target is ${{ env.runner_target }}"
-
+          echo "runner_target is .."
