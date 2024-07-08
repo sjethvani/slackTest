@@ -19,7 +19,7 @@ jobs:
 
   get_tag:
     if: ${{ (github.event_name == 'workflow_dispatch') }}
-    runs-on: ${{ contains(github.server_url, 'https://github.com') && '${{ vars.FEDRAMP_ZEUS_CLUSTER_NAME }}-general' || 'ubuntu-latest' }}
+    runs-on: ${{ contains(github.server_url, 'https://github.com') && vars.FEDRAMP_ZEUS_CLUSTER_NAME || 'ubuntu-latest' }}
     steps:
       - name: Printing file
         run: |
