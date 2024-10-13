@@ -103,6 +103,7 @@ jobs:
 # Promoting secondray helm ecr repo list for given mtservice
   promote_secondary_helm_repos:
     needs: derive_secondary_helm_ecrs
+    if: needs.derive_secondary_helm_ecrs.outputs.secondaryhelmrepos != ''
     strategy:
       fail-fast: false
       matrix:
@@ -157,18 +158,19 @@ jobs:
         echo "printing json values"
         
 
-# # Promoting secondray helm ecr repo list for given mtservice
-#   promote_secondary_docker_repos:
-#     needs: derive_secondary_docker_ecrs
-#     strategy:
-#       fail-fast: false
-#       matrix:
-#         repo_name: ${{ fromJSON(needs.derive_secondary_docker_ecrs.outputs.secondaryhelmrepos) }}
-#     runs-on: ubuntu-latest
-#     steps:
+# Promoting secondray helm ecr repo list for given mtservice
+  promote_secondary_docker_repos:
+    needs: derive_secondary_docker_ecrs
+    if: needs.derive_secondary_docker_ecrs.outputs.secondarydockerrepos != ''
+    strategy:
+      fail-fast: false
+      matrix:
+        repo_name: ${{ fromJSON(needs.derive_secondary_docker_ecrs.outputs.secondarydockerrepos) }}
+    runs-on: ubuntu-latest
+    steps:
 
-#     - name: Printing information
-#       run: |
-#         echo "repo_name --> ${{ matrix.repo_name }}"
-#         echo "repo_type --> helm"
-#         echo "tag_name --> ${{ inputs.service_version }}"
+    - name: Printing information
+      run: |
+        echo "repo_name --> ${{ matrix.repo_name }}"
+        echo "repo_type --> docker"
+        echo "tag_name --> ${{ inputs.service_version }}"
