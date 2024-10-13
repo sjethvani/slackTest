@@ -1,0 +1,39 @@
+{
+    "delphi": {
+        "docker" : [
+            "delphi-compliance",
+            "delphi-migration"
+        ],
+        "helm" : []
+    },
+    "alation-analytics-mt": {
+        "docker" : [
+            "alation-analytics-mt-valhalla-migration"
+        ],
+        "helm" : []
+    },
+    "tenant-resource-catalog": {
+        "docker" : [],
+        "helm" : [
+            "helm/trc-orchestration"
+        ]
+    },
+    "tenant-onboarding": {
+        "docker" : ["tos-orchestration"],
+        "helm" : []
+    },
+    "acm": {
+        "docker" : [
+            "ocf-system/acm",
+            "ocf-system/aim",
+            "ocf-system/cag",
+            "ocf-system/containerd",
+            "ocf-system/crtms",
+            "ocf-system/forwardproxy",
+            "ocf-system/queryservice",
+            "ocf-system/servicediscovery",
+            "ocf-system/storage"
+        ],
+        "helm" : []
+    }
+}
