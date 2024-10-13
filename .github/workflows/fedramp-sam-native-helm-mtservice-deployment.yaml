@@ -89,7 +89,7 @@ jobs:
             extra_helm_ecrs=`jq -r [.\"${{ inputs.service_name }}\".helm[]] mtservice_extra_ecr_promotion_matrix/info.json`
             echo "List of ecr repos for mtservice (${{ inputs.service_name }}) from which helm charts to be promoted are $extra_helm_ecrs"
         fi
-        echo "secondaryhelmrepos=${{ toJSON($extra_helm_ecrs) }}" >> "$GITHUB_OUTPUT"
+        echo "secondaryhelmrepos=${{ toJSON(extra_helm_ecrs) }}" >> "$GITHUB_OUTPUT"
 
         echo "Printing list of secondaryhelmrepos"
         echo $extra_helm_ecrs
@@ -139,7 +139,7 @@ jobs:
             extra_docker_ecrs=`jq -r [.\"${{ inputs.service_name }}\".docker[]] mtservice_extra_ecr_promotion_matrix/info.json`
             echo "List of ecr repos for mtservice (${{ inputs.service_name }}) from which helm charts to be promoted are $extra_docker_ecrs"
         fi
-        echo "secondarydockerrepos=${{ toJSON($secondarydockerrepos) }}" >> "$GITHUB_OUTPUT"
+        echo "secondarydockerrepos=${{ toJSON(extra_docker_ecrs) }}" >> "$GITHUB_OUTPUT"
 
         echo "Printing list of secondarydockerrepos"
         echo $extra_docker_ecrs
