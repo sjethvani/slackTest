@@ -93,23 +93,28 @@ jobs:
         echo $extra_helm_ecrs >> "$GITHUB_OUTPUT"
         echo 'EOF' >> $GITHUB_OUTPUT
         echo "Printing list of secondaryhelmrepos"
-        echo "$secondaryhelmrepos"
+        echo $extra_helm_ecrs
 
-# Promoting secondray helm ecr repo list for given mtservice
-  promote_secondary_helm_repos:
-    needs: derive_secondary_helm_ecrs
-    strategy:
-      fail-fast: false
-      matrix:
-        repo_name: ${{ fromJSON(needs.derive_secondary_helm_ecrs.outputs.secondaryhelmrepos) }}
-    runs-on: ubuntu-latest
-    steps:
-
-    - name: Printing information
+    - name: testing output value
       run: |
-        echo "repo_name --> ${{ matrix.repo_name }}"
-        echo "repo_type --> helm"
-        echo "tag_name --> ${{ inputs.service_version }}"
+        echo "printing json values"
+        echo ${{ fromJSON(steps.extra_helm_ecrs.outputs.secondaryhelmrepos) }}   
+
+# # Promoting secondray helm ecr repo list for given mtservice
+#   promote_secondary_helm_repos:
+#     needs: derive_secondary_helm_ecrs
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         repo_name: ${{ fromJSON(needs.derive_secondary_helm_ecrs.outputs.secondaryhelmrepos) }}
+#     runs-on: ubuntu-latest
+#     steps:
+
+#     - name: Printing information
+#       run: |
+#         echo "repo_name --> ${{ matrix.repo_name }}"
+#         echo "repo_type --> helm"
+#         echo "tag_name --> ${{ inputs.service_version }}"
 
 
 
@@ -139,20 +144,25 @@ jobs:
         echo $extra_docker_ecrs >> "$GITHUB_OUTPUT"
         echo 'EOF' >> $GITHUB_OUTPUT
         echo "Printing list of secondarydockerrepos"
-        echo "$secondarydockerrepos"         
+        echo $extra_docker_ecrs
 
-# Promoting secondray helm ecr repo list for given mtservice
-  promote_secondary_docker_repos:
-    needs: derive_secondary_docker_ecrs
-    strategy:
-      fail-fast: false
-      matrix:
-        repo_name: ${{ fromJSON(needs.derive_secondary_docker_ecrs.outputs.secondaryhelmrepos) }}
-    runs-on: ubuntu-latest
-    steps:
-
-    - name: Printing information
+    - name: testing output value
       run: |
-        echo "repo_name --> ${{ matrix.repo_name }}"
-        echo "repo_type --> helm"
-        echo "tag_name --> ${{ inputs.service_version }}"
+        echo "printing json values"
+        echo ${{ fromJSON(steps.extra_docker_ecrs.outputs.secondarydockerrepos) }}          
+
+# # Promoting secondray helm ecr repo list for given mtservice
+#   promote_secondary_docker_repos:
+#     needs: derive_secondary_docker_ecrs
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         repo_name: ${{ fromJSON(needs.derive_secondary_docker_ecrs.outputs.secondaryhelmrepos) }}
+#     runs-on: ubuntu-latest
+#     steps:
+
+#     - name: Printing information
+#       run: |
+#         echo "repo_name --> ${{ matrix.repo_name }}"
+#         echo "repo_type --> helm"
+#         echo "tag_name --> ${{ inputs.service_version }}"
