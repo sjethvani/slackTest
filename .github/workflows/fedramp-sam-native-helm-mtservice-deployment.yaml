@@ -86,10 +86,11 @@ jobs:
         declare -a extra_helm_ecrs
         if [ `jq -r '.'\"${{ inputs.service_name }}\"'.'\"helm\"' | length' mtservice_extra_ecr_promotion_matrix/info.json` -gt 0 ]; then
             echo "mtservice (${{ inputs.service_name }}) has some extra helm ECR repos to be considered for promotion"
-            extra_helm_ecrs=`jq -r [.\"${{ inputs.service_name }}\".helm[]] mtservice_extra_ecr_promotion_matrix/info.json`
+            extra_helm_ecrs=`jq -r '.\"${{ inputs.service_name }}\".helm | @json' mtservice_extra_ecr_promotion_matrix/info.json`
             echo "List of ecr repos for mtservice (${{ inputs.service_name }}) from which helm charts to be promoted are $extra_helm_ecrs"
         fi
-        echo "secondaryhelmrepos=$extra_helm_ecrs" >> "$GITHUB_OUTPUT"
+        {
+        echo "secondaryhelmrepos=$extra_helm_ecrs" >> $GITHUB_OUTPUT
 
         echo "Printing list of secondaryhelmrepos"
         echo $extra_helm_ecrs
@@ -136,7 +137,7 @@ jobs:
         declare -a extra_docker_ecrs
         if [ `jq -r '.'\"${{ inputs.service_name }}\"'.'\"docker\"' | length' mtservice_extra_ecr_promotion_matrix/info.json` -gt 0 ]; then
             echo "mtservice (${{ inputs.service_name }}) has some extra docker ECR repos to be considered for promotion"
-            extra_docker_ecrs=`jq -r [.\"${{ inputs.service_name }}\".docker[]] mtservice_extra_ecr_promotion_matrix/info.json`
+            extra_docker_ecrs=`jq -r '.\"${{ inputs.service_name }}\".docker | @json' mtservice_extra_ecr_promotion_matrix/info.json`
             echo "List of ecr repos for mtservice (${{ inputs.service_name }}) from which helm charts to be promoted are $extra_docker_ecrs"
         fi
         echo "secondarydockerrepos=$extra_docker_ecrs" >> "$GITHUB_OUTPUT"
