@@ -94,7 +94,7 @@ jobs:
         #echo "secondaryhelmrepos=$extra_helm_ecrs" >> $GITHUB_OUTPUT
 
         echo "Printing list of secondaryhelmrepos"
-        echo $extra_helm_ecrs
+        #echo $extra_helm_ecrs
 
     - name: testing output value
       run: |
