@@ -140,15 +140,22 @@ jobs:
             extra_docker_ecrs=`jq -r '.'\"${{ inputs.service_name }}\"'.'\"docker\"' | @json' mtservice_extra_ecr_promotion_matrix/info.json`
             echo "List of ecr repos for mtservice (${{ inputs.service_name }}) from which helm charts to be promoted are $extra_docker_ecrs"
         fi
-        #echo "secondarydockerrepos=$extra_docker_ecrs" >> "$GITHUB_OUTPUT"
+        echo "secondarydockerrepos=$extra_docker_ecrs" >> "$GITHUB_OUTPUT"
 
         echo "Printing list of secondarydockerrepos"
         echo $extra_docker_ecrs
 
-    - name: testing output value
+    - name: testing output value if empty
+      if: steps.docker_ecrs.outputs.secondarydockerrepos == ''
       run: |
-        #echo "printing json values"
-        #echo ${{ fromJSON(steps.docker_ecrs.outputs.secondarydockerrepos) }}          
+        echo "printing json values"
+        # echo ${{ fromJSON(steps.docker_ecrs.outputs.secondarydockerrepos) }}          
+
+    - name: testing output value NOT empty
+      if: steps.docker_ecrs.outputs.secondarydockerrepos != ''
+      run: |
+        echo "printing json values"
+        # echo ${{ fromJSON(steps.docker_ecrs.outputs.secondarydockerrepos) }}          
 
 # # Promoting secondray helm ecr repo list for given mtservice
 #   promote_secondary_docker_repos:
