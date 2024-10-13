@@ -89,9 +89,8 @@ jobs:
             extra_helm_ecrs=`jq -r [.\"${{ inputs.service_name }}\".helm[]] mtservice_extra_ecr_promotion_matrix/info.json`
             echo "List of ecr repos for mtservice (${{ inputs.service_name }}) from which helm charts to be promoted are $extra_helm_ecrs"
         fi
-        echo 'secondaryhelmrepos<<EOF' >> $GITHUB_OUTPUT
-        echo $extra_helm_ecrs >> "$GITHUB_OUTPUT"
-        echo 'EOF' >> $GITHUB_OUTPUT
+        echo 'secondaryhelmrepos=$extra_helm_ecrs' >> "$GITHUB_OUTPUT"
+
         echo "Printing list of secondaryhelmrepos"
         echo $extra_helm_ecrs
 
@@ -124,7 +123,7 @@ jobs:
     ## self hosted k8 github runner pod are deployed as rafay addons
     runs-on: ubuntu-latest
     outputs:
-      secondarydockerrepos: ${{ steps.extra_docker_ecrs.outputs.secondarydockerrepos }}
+      secondarydockerrepos: ${{ steps.docker_ecrs.outputs.secondarydockerrepos }}
     steps:
 
     - name: Check out repository code
@@ -132,7 +131,7 @@ jobs:
 
     - name: Fetch extra docker ecr repos from mtservice_extra_ecr_promotion_matrix/info.json
       shell: bash
-      id: extra_docker_ecrs
+      id: docker_ecrs
       run: |
         declare -a extra_docker_ecrs
         if [ `jq -r '.'\"${{ inputs.service_name }}\"'.'\"docker\"' | length' mtservice_extra_ecr_promotion_matrix/info.json` -gt 0 ]; then
@@ -140,16 +139,15 @@ jobs:
             extra_docker_ecrs=`jq -r [.\"${{ inputs.service_name }}\".docker[]] mtservice_extra_ecr_promotion_matrix/info.json`
             echo "List of ecr repos for mtservice (${{ inputs.service_name }}) from which helm charts to be promoted are $extra_docker_ecrs"
         fi
-        echo 'secondarydockerrepos<<EOF' >> $GITHUB_OUTPUT
-        echo $extra_docker_ecrs >> "$GITHUB_OUTPUT"
-        echo 'EOF' >> $GITHUB_OUTPUT
+        echo 'secondarydockerrepos=$extra_docker_ecrs' >> "$GITHUB_OUTPUT"
+
         echo "Printing list of secondarydockerrepos"
         echo $extra_docker_ecrs
 
     - name: testing output value
       run: |
         echo "printing json values"
-        echo ${{ fromJSON(steps.extra_docker_ecrs.outputs.secondarydockerrepos) }}          
+        echo ${{ fromJSON(steps.docker_ecrs.outputs.secondarydockerrepos) }}          
 
 # # Promoting secondray helm ecr repo list for given mtservice
 #   promote_secondary_docker_repos:
