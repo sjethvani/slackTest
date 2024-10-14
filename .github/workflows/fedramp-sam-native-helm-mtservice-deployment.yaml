@@ -95,10 +95,18 @@ jobs:
         echo "Printing list of secondaryhelmrepos"
         echo $extra_helm_ecrs
 
-    - name: testing output value
+    - name: testing output value if empty
+      if: steps.extra_helm_ecrs.outputs.secondaryhelmrepos == ''
       run: |
         echo "printing json values"
-        echo ${{ fromJSON(steps.extra_helm_ecrs.outputs.secondaryhelmrepos) }}   
+        echo ${{ fromJSON(steps.extra_helm_ecrs.outputs.secondaryhelmrepos) }}
+        
+
+    - name: testing output value NOT empty
+      if: steps.extra_helm_ecrs.outputs.secondaryhelmrepos != ''
+      run: |
+        echo "printing json values"
+        echo ${{ fromJSON(steps.extra_helm_ecrs.outputs.secondaryhelmrepos) }}     
 
 # Promoting secondray helm ecr repo list for given mtservice
   promote_secondary_helm_repos:
@@ -172,5 +180,6 @@ jobs:
     - name: Printing information
       run: |
         echo "repo_name --> ${{ matrix.repo_name }}"
-        echo "repo_type --> docker"
-        echo "tag_name --> ${{ inputs.service_version }}"
+        echo "repo_type --> helm"
+        tag_name=${{ contains(matrix.repo_name, 'ocf-system/') &&  format('{0}.{1}', inputs.service_version, 'fips') || inputs.service_version }}
+        echo "tag_name --> $tag_name"
