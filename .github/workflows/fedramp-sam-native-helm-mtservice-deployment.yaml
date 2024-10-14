@@ -99,7 +99,6 @@ jobs:
       if: steps.extra_helm_ecrs.outputs.secondaryhelmrepos == ''
       run: |
         echo "printing json values"
-        echo ${{ fromJSON(steps.extra_helm_ecrs.outputs.secondaryhelmrepos) }}
         
 
     - name: testing output value NOT empty
@@ -164,6 +163,7 @@ jobs:
       if: steps.docker_ecrs.outputs.secondarydockerrepos != ''
       run: |
         echo "printing json values"
+        echo ${{ fromJSON(steps.docker_ecrs.outputs.secondarydockerrepos) }}
         
 
 # Promoting secondray helm ecr repo list for given mtservice
