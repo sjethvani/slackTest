@@ -49,23 +49,28 @@ jobs:
             TAG: "1.2.3"
           with:
             script: |
-                const commitSha = ${{ github.sha}};
-                
-                // Get associated PRs
-                const prs = await github.rest.repos.listPullRequestsAssociatedWithCommit({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                commit_sha: commitSha
-                });
-                
-                if (prs.data.length > 0) {
-                    github.rest.pulls.update({
-                        pull_number: prs.data[0].number,
-                        owner: context.repo.owner,
-                        repo: context.repo.repo,
-                        title: sameer
-                    })
+                try {
+                    const commitSha = ${{ github.sha}};
+                    
+                    // Get associated PRs
+                    const prs = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    commit_sha: commitSha
+                    });
+                    
+                    if (prs.data.length > 0) {
+                        github.rest.pulls.update({
+                            pull_number: prs.data[0].number,
+                            owner: context.repo.owner,
+                            repo: context.repo.repo,
+                            title: `${prs.data[0].title} - alationfc-${process.env.TAG}`
+                        })
+                    }
+                } catch (error) {
+                    core.setFailed(error.message);
                 }
+
 
 
           
