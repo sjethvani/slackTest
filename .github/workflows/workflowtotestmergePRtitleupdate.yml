@@ -50,7 +50,7 @@ jobs:
           with:
             script: |
                 try {
-                    const commitSha = ${{ github.sha}};
+                    const commitSha = '${{ github.sha}}';
                     
                     // Get associated PRs
                     const prs = await github.rest.repos.listPullRequestsAssociatedWithCommit({
