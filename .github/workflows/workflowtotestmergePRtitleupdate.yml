@@ -1,0 +1,71 @@
+name: "Pull request title update when merging PR"
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+      - 'production_**'
+  issue_comment:
+    types:
+      - created
+  pull_request:
+    paths:
+      - '.github/workflows/build-package.yaml'
+      - 'github/scripts/build-package-*'
+      - 'github/scripts/get_alation_version.py'
+      - 'jenkins/shell/package/**'
+      - 'dbin/platform_installer.py'
+      - 'deploy/**'
+      - 'repo_build/**'
+      - 'version.py'
+      - 'alation/dependencies/**'
+      - 'without_chrootjail/**'
+      - 'requirements/**'
+      # AL-85657 Require full builds on migration changes
+      - 'django/**/migrations/**'
+      - 'django-migration/**'
+      - 'celery-worker/**'
+
+# Required to read secrets from vault
+permissions:
+    id-token: write
+    packages: write
+    contents: write
+    issues: write
+    checks: write
+    pull-requests: write
+ 
+jobs:
+  should-package:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Get PR associated with merge commit sha and suffix alationfc build tag to PR title
+          uses: actions/github-script@v6
+          # Running it only when merge commit is pushed to main/production_ branches
+          if: ${{ github.event_name == 'push' && (contains(github.ref, 'refs/heads/main') || contains(github.ref, 'refs/heads/production_') ) }}
+          env: 
+            TAG: "1.2.3"
+          with:
+            script: |
+                const commitSha = ${{ github.sha}}
+                
+                // Get associated PRs
+                const prs = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                commit_sha: commitSha
+                });
+                
+                if (prs.data.length > 0) {
+                github.rest.pulls.update({
+                    pull_number: prs.data[0].number,
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    title: `prs.data[0].title ${process.env.TAG}`
+                })
+                }
+
+
+          
