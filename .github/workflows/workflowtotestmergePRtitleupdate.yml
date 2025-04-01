@@ -57,6 +57,7 @@ jobs:
                     repo: context.repo.repo,
                     commit_sha: commitSha
                     });
+                    console.log(prs)
                     
                     if (prs.data.length > 0) {
                         await github.rest.pulls.update({
@@ -66,6 +67,10 @@ jobs:
                             title: `${prs.data[0].title} - alationfc-${process.env.TAG}`
                         })
                     }
+                    else {
+                        console.log('No PRs associated with commit')
+                    }
+                    
 
 
 
