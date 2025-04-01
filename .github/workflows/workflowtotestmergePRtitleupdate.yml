@@ -59,12 +59,12 @@ jobs:
                 });
                 
                 if (prs.data.length > 0) {
-                github.rest.pulls.update({
-                    pull_number: prs.data[0].number,
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    title: `prs.data[0].title ${process.env.TAG}`
-                })
+                    github.rest.pulls.update({
+                        pull_number: prs.data[0].number,
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        title: `prs.data[0].title ${process.env.TAG}`
+                    })
                 }
 
 
