@@ -41,15 +41,17 @@ jobs:
   should-package:
       runs-on: ubuntu-latest
       steps:
-        - name: Get PR associated with merge commit sha and suffix alationfc build tag to PR title
+        #- name: Get PR associated with merge commit sha and suffix alationfc build tag to PR title
+        - name: Get PR associated with merge commit sha
           uses: actions/github-script@v6
+          id: get_pr
           # Running it only when merge commit is pushed to main/production_ branches
           if: ${{ github.event_name == 'push' && (contains(github.ref, 'refs/heads/main') || contains(github.ref, 'refs/heads/production_') ) }}
           env: 
             TAG: "1.2.3"
           with:
             script: |
-                    const commitSha = '${{ github.sha}}';
+                    const commitSha = '${{ github.env.sha}}';
                     
                     // Get associated PRs
                     const prs = await github.rest.repos.listPullRequestsAssociatedWithCommit({
@@ -60,16 +62,30 @@ jobs:
                     console.log(prs)
                     
                     if (prs.data.length > 0) {
-                        await github.rest.pulls.update({
-                            pull_number: prs.data[0].number,
-                            owner: context.repo.owner,
-                            repo: context.repo.repo,
-                            title: `${prs.data[0].title} - alationfc-${process.env.TAG}`
-                        })
+                        # await github.rest.pulls.update({
+                        #     pull_number: prs.data[0].number,
+                        #     owner: context.repo.owner,
+                        #     repo: context.repo.repo,
+                        #     title: `${prs.data[0].title} - alationfc-${process.env.TAG}`
+                        # })
+                        console.log('Associated PR is '+ prs.data[0].number)
+                        return prs.data[0].number; // Return first PR number    
                     }
                     else {
                         console.log('No PRs associated with commit')
+                        return '';
                     }
+        - name: Create comment
+          uses: peter-evans/create-or-update-comment@v4
+          if: ${{ steps.get_pr.outputs.result != '' }}
+          env: 
+            TAG: "1.2.3"
+          with:
+            issue-number: "${{steps.get_pr.outputs.result}}"
+            body: |
+                🎉 This PR is included in version ${{ github.env.TAG }} 🎉
+                - With GitHub **Markdown** :sparkles:
+            reactions: hooray,rocket                        
                     
 
 
