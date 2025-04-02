@@ -71,7 +71,7 @@ jobs:
                             title: `${prs.data[0].title} - alationfc-${process.env.TAG}`
                         })
                         */
-                        // console.log('Associated PR is '+ prs.data[0].number)
+                        console.log('Associated PR is '+ prs.data[0].number)
                         return prs.data[0].number; // Return first PR number    
                     }
                     else {
@@ -86,8 +86,7 @@ jobs:
           with:
             issue-number: "${{steps.get_pr.outputs.result}}"
             body: |
-                🎉 This PR is included in version ${{ env.TAG }} 🎉
-                - With GitHub **Markdown** :sparkles:
+                🎉 This PR is included in alation build --> ${{ env.TAG }} 🎉
             reactions: hooray,rocket                        
                     
 
