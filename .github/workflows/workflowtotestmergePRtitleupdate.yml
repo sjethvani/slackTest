@@ -1,5 +1,6 @@
 name: "Pull request title update when merging PR"
 
+
 on:
   workflow_call:
   workflow_dispatch:
