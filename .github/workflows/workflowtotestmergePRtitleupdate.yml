@@ -64,14 +64,14 @@ jobs:
                     console.log(prs)
                     
                     if (prs.data.length > 0) {
-                        /*
+                        
                         await github.rest.pulls.update({
                             pull_number: prs.data[0].number,
                             owner: context.repo.owner,
                             repo: context.repo.repo,
                             title: `${prs.data[0].title} - alationfc-${process.env.TAG}`
                         })
-                        */
+                        
                         console.log('Associated PR is '+ prs.data[0].number)
                         return prs.data[0].number; // Return first PR number    
                     }
@@ -87,8 +87,10 @@ jobs:
           with:
             issue-number: "${{steps.get_pr.outputs.result}}"
             body: |
-                🎉 This PR is included in alation build --> ${{ env.TAG }} 🎉
-            reactions: hooray,rocket
+                🎉 This PR is included in alationfc build ${{ env.TAG }} 🎉
+            reactions: hooray,rocket                        
+                    
+
 
 
           
