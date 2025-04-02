@@ -88,9 +88,7 @@ jobs:
             issue-number: "${{steps.get_pr.outputs.result}}"
             body: |
                 🎉 This PR is included in alation build --> ${{ env.TAG }} 🎉
-            reactions: hooray,rocket                        
-                    
-
+            reactions: hooray,rocket
 
 
           
