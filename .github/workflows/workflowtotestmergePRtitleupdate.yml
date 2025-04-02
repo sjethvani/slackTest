@@ -50,6 +50,7 @@ jobs:
           env: 
             TAG: "1.2.3"
           with:
+            result-encoding: string
             script: |
                     const commitSha = '${{ github.sha}}';
                     
