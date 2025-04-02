@@ -85,7 +85,7 @@ jobs:
           with:
             issue-number: "${{steps.get_pr.outputs.result}}"
             body: |
-                🎉 This PR is included in version $TAG 🎉
+                🎉 This PR is included in version ${{ env.TAG }} 🎉
                 - With GitHub **Markdown** :sparkles:
             reactions: hooray,rocket                        
                     
