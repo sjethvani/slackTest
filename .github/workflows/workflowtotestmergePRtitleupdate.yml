@@ -51,7 +51,7 @@ jobs:
             TAG: "1.2.3"
           with:
             script: |
-                    const commitSha = '${{ github.env.sha}}';
+                    const commitSha = '${{ github.sha}}';
                     
                     // Get associated PRs
                     const prs = await github.rest.repos.listPullRequestsAssociatedWithCommit({
